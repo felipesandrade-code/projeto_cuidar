@@ -5,9 +5,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import br.com.fiap.projetocuidar.Screens.LoginScreen
 import br.com.fiap.projetocuidar.ui.theme.ProjetoCuidarTheme
@@ -19,7 +22,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             ProjetoCuidarTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .fillMaxWidth(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     LoginScreen(navController = NavController(this))
@@ -27,4 +32,10 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun MainActivityPreview() {
+    MainActivity()
 }
