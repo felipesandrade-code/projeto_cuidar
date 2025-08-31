@@ -7,5 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="cor_botao">#E8FFA0</color>
+    <color name="cor_botao">#E8FFA0</color>]
+    <color name="cor_registre">#51701A</color>
+    <color name="cor_card_footer">#75874F</color>
 </resources>

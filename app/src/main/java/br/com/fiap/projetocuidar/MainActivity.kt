@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    LoginScreen(navController = NavController, modifier = Modifier)
+                    LoginScreen(navController = NavController(this))
                 }
             }
         }

@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">projeto cuidar</string>
+    <string name="app_name">Projeto Cuidar+</string>
+    <string name="botao_login">Login</string>
 </resources>
