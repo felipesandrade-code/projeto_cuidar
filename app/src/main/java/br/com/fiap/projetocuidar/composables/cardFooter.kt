@@ -29,19 +29,19 @@ fun CardFooter(modifier: Modifier = Modifier){
             color = colorResource(R.color.cor_card_footer),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
         )
-        .padding(bottom = 100.dp, top = 30.dp)
+        .padding(bottom = 100.dp, top = 20.dp)
         .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         Text(text = "®cuidar+",
-            fontSize = 22.sp,
+            fontSize = 23.sp,
             textAlign = TextAlign.Center,
             fontFamily = FontFamily(Font(R.font.poppins_regular)),
             color = colorResource(R.color.white),
         )
         Spacer(modifier = Modifier.height(15.dp))
         Text(text = "Todos os direitos reservados",
-            fontSize = 14.sp,
+            fontSize = 15.sp,
             textAlign = TextAlign.Center,
             fontFamily = FontFamily(Font(R.font.poppins_regular)),
             maxLines = 1,

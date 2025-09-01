@@ -1,10 +1,13 @@
 package br.com.fiap.projetocuidar.composables
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
@@ -37,11 +40,13 @@ fun ColumnLogin(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .size(300.dp)
                 .padding(16.dp)
+                .offset(y = 50.dp)
         )
         Spacer(modifier = Modifier.height(60.dp))
         Column(
             modifier = Modifier
                 .align(alignment = Alignment.CenterHorizontally)
+                .offset(y = 40.dp)
         ){
             Button(
                 onClick = {/*TODO*/ },
@@ -69,6 +74,9 @@ fun ColumnLogin(modifier: Modifier = Modifier) {
                 fontFamily = FontFamily(Font(R.font.poppins_regular))
             )
         }
+    }
+    Box(modifier = Modifier.absoluteOffset(y= 700.dp)) {
+        CardFooter()
     }
 }
 

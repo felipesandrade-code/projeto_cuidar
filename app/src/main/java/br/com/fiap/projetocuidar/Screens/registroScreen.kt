@@ -46,8 +46,8 @@ fun RegistroScreen(modifier: Modifier = Modifier) {
     ColumnRegister()
     Box(
         modifier = Modifier
-            .absoluteOffset(y = 670.dp)
-            .padding(top = 40.dp)
+            .absoluteOffset(y = 680.dp)
+            .padding(top = 50.dp)
     ) {
         CardFooter(modifier = Modifier.align(alignment = Alignment.Center))
     }
