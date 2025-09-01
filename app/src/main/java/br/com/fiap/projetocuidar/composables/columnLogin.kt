@@ -26,10 +26,14 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import br.com.fiap.projetocuidar.R
 
 @Composable
-fun ColumnLogin(modifier: Modifier = Modifier) {
+fun ColumnLogin(
+    navController: NavController,
+) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -49,7 +53,9 @@ fun ColumnLogin(modifier: Modifier = Modifier) {
                 .offset(y = 40.dp)
         ){
             Button(
-                onClick = {/*TODO*/ },
+                onClick = {
+                    navController.navigate("home")
+                },
                 modifier = Modifier
                     .padding(bottom = 16.dp)
                     .size(width = 150.dp, height = 50.dp),
@@ -84,5 +90,6 @@ fun ColumnLogin(modifier: Modifier = Modifier) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun ColumnLoginPreview() {
-    ColumnLogin()
+    val nav = rememberNavController()
+    ColumnLogin(navController = nav)
 }

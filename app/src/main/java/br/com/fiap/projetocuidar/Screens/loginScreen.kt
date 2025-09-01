@@ -8,24 +8,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import br.com.fiap.projetocuidar.R
 import br.com.fiap.projetocuidar.composables.CardFooter
 import br.com.fiap.projetocuidar.composables.ColumnLogin
 
 @Composable
 fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .background(Color.White)
-        .padding(32.dp)
-    ){
-        ColumnLogin()
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(32.dp)
+    ) {
+        ColumnLogin(navController = navController)
     }
-    Box(modifier = Modifier.absoluteOffset(y= 650.dp)){
+    Box(modifier = Modifier.absoluteOffset(y = 650.dp)) {
         CardFooter()
     }
 }

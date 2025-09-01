@@ -1,18 +1,11 @@
 package br.com.fiap.projetocuidar.Screens
 
-import android.graphics.drawable.shapes.Shape
-import android.os.Build
-import android.widget.Space
-import androidx.annotation.RequiresApi
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.fromColorLong
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -37,36 +29,37 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.fiap.projetocuidar.R
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 
-@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
-    Box(
-        modifier = Modifier
+fun HomeScreen(playServicesOk: Boolean, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
             .fillMaxSize()
+            .padding(16.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .offset(y = 30.dp)
-        ) {
+        Row(modifier = Modifier.fillMaxWidth()) {
             Image(
                 painter = painterResource(R.drawable.logo),
                 contentDescription = "Logo",
                 modifier = Modifier.size(120.dp)
             )
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(Modifier.weight(1f))
             Icon(
                 imageVector = Icons.Filled.Menu,
                 contentDescription = "Menu",
-                modifier = Modifier
-                    .padding(end = 30.dp)
-                    .align(alignment = androidx.compose.ui.Alignment.CenterVertically)
-                    .size(40.dp),
-                colorResource(R.color.cor_registre)
+                tint = colorResource(R.color.cor_registre),
+                modifier = Modifier.size(40.dp)
             )
         }
+
         val cornerRadius = 12.dp
+
         Row(
             modifier = Modifier
                 .padding(6.dp)
@@ -88,30 +81,44 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 )
             }
         }
+
         Spacer(modifier = Modifier.height(30.dp))
-        Column(modifier = Modifier
-            .align(Alignment.Center)
-            .fillMaxWidth()
-            .offset(y = -160.dp)
-        ){
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = colorResource(R.color.white)),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                //border = BorderStroke(width = 10.dp, color = colorResource(R.color.purple_200)),
-                shape = RoundedCornerShape(8.dp)
+
+
+        Card(
+            colors = CardDefaults.cardColors(containerColor = colorResource(R.color.white)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp)
+        ) {
+            val campoGrande = LatLng(-20.4487, -54.6173)
+            val cameraPositionState = rememberCameraPositionState {
+                position = CameraPosition.fromLatLngZoom(campoGrande, 12f)
+            }
+            val markerState = rememberMarkerState(position = campoGrande)
+
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState
             ) {
-                Text(text = "Testando...")
+                Marker(
+                    state = markerState,
+                    title = "ONG Exemplo",
+                    snippet = "Clique para detalhes"
+                )
             }
         }
-    }
 
+    }
 }
 
-@RequiresApi(Build.VERSION_CODES.Q)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun HomeScreenPreview() {
-    HomeScreen()
+    HomeScreen(
+        playServicesOk = true,
+        modifier = Modifier
+    )
 }

@@ -8,8 +8,10 @@ espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.9.3"
 activityCompose = "1.10.1"
 composeBom = "2025.08.01"
+mapsCompose = "6.7.2"
 navigation = "2.9.3"
 navigationanimation ="2.8.0"
+playServicesMaps = "19.2.0"
 ui = "1.9.0"
 
 [libraries]
@@ -27,8 +29,10 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-accompanist-navigation-animation = {module = "com.google.accompanist:accompanist-navigation-animation", version = "0.34.0"}
+accompanist-navigation-animation = {module = "com.google.accompanist:accompanist-navigation-animation", version = "0.36.0"}
+maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
 navigation-compose = {module = "androidx.navigation:navigation-compose", version.ref = "navigation"}
+play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
 
 [plugins]

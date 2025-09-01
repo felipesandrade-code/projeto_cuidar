@@ -4,38 +4,24 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
-import br.com.fiap.projetocuidar.Screens.LoginScreen
+import br.com.fiap.projetocuidar.navigation.AppNavHost
+
 import br.com.fiap.projetocuidar.ui.theme.ProjetoCuidarTheme
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val playServicesOk =
+            GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) == ConnectionResult.SUCCESS
+
         setContent {
             ProjetoCuidarTheme {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    LoginScreen(navController = NavController(this))
-                }
+                AppNavHost(playServicesOk = playServicesOk)
             }
         }
     }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun MainActivityPreview() {
-    MainActivity()
 }
