@@ -1,6 +1,9 @@
 package br.com.fiap.projetocuidar.Screens
 
 import android.graphics.drawable.shapes.Shape
+import android.os.Build
+import android.widget.Space
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,27 +15,36 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.fromColorLong
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.fiap.projetocuidar.R
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .fillMaxWidth()
-    ){
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -54,23 +66,50 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 colorResource(R.color.cor_registre)
             )
         }
-        Box(modifier = Modifier
-            .offset(y = 180.dp, x = 40.dp)
-            .border(border = BorderStroke(1.dp, color = colorResource(R.color.cor_card_footer))),
-        ){
-            Column(
+        val cornerRadius = 12.dp
+        Row(
+            modifier = Modifier
+                .padding(6.dp)
+                .offset(y = 160.dp, x = 40.dp)
+        ) {
+            Row(
                 modifier = Modifier
-                    .background(color = colorResource(R.color.cor_card_footer))
-                    .align(alignment = androidx.compose.ui.Alignment.Center)
-                    .border(border = BorderStroke(1.dp, color = colorResource(R.color.cor_card_footer))),
+                    .background(
+                        color = colorResource(R.color.cor_card_footer),
+                        shape = RoundedCornerShape(cornerRadius)
+                    )
             ) {
-                Text(text = "Mapa Ongs")
+                Text(
+                    text = "Mapa Ongs",
+                    modifier = Modifier
+                        .padding(start = 10.dp, end = 10.dp),
+                    color = colorResource(R.color.white),
+                    fontFamily = FontFamily(Font(R.font.poppins_regular))
+                )
             }
-
+        }
+        Spacer(modifier = Modifier.height(30.dp))
+        Column(modifier = Modifier
+            .align(Alignment.Center)
+            .fillMaxWidth()
+            .offset(y = -160.dp)
+        ){
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = colorResource(R.color.white)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                //border = BorderStroke(width = 10.dp, color = colorResource(R.color.purple_200)),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(text = "Testando...")
+            }
         }
     }
+
 }
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun HomeScreenPreview() {
