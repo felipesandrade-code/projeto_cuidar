@@ -13,4 +13,9 @@
     <color name="cor_column_registre">#F2F3F5</color>
     <color name="cor_text_login">#8FA7B2</color>
     <color name="titulo">#4D6F80</color>
+    <color name="texto_orfanato">#5C8599</color>
+    <color name="cor_ver_mapa">#B3DAE2</color>
+    <color name="cor_texto_ver_mapa">#0089A5</color>
+    <color name="card_horario_orfanato">#C2EEF7</color>
+    <color name="card_fim_de_semana">#A1E9C5</color>
 </resources>

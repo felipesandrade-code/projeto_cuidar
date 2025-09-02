@@ -11,7 +11,6 @@ import androidx.compose.ui.graphics.Color
 
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import br.com.fiap.projetocuidar.composables.CardFooter
 import br.com.fiap.projetocuidar.composables.ColumnLogin
 
 @Composable
@@ -20,11 +19,7 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White)
-            .padding(32.dp)
     ) {
         ColumnLogin(navController = navController)
-    }
-    Box(modifier = Modifier.absoluteOffset(y = 650.dp)) {
-        CardFooter()
     }
 }

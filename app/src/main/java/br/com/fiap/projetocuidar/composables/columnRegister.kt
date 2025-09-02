@@ -1,14 +1,11 @@
 package br.com.fiap.projetocuidar.composables
 
-import android.widget.Space
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,11 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -33,8 +27,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.addPathNodes
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -56,27 +48,30 @@ fun ColumnRegister(modifier: Modifier = Modifier) {
     val sobrenome = remember { mutableStateOf("") }
     val telefone = remember { mutableStateOf("") }
 
-    Box(modifier = Modifier.fillMaxSize()
-        .background(color = colorResource(R.color.cor_column_registre)
-
-        )
-    ){
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .fillMaxWidth()
+            .background(color = colorResource(R.color.cor_column_registre))
+    )
+    {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(90.dp)
+                .height(100.dp)
                 .background(color = colorResource(R.color.white))
                 .offset(y = 10.dp),
-                horizontalArrangement = Arrangement.Center,
+            horizontalArrangement = Arrangement.Center,
         ) {
-            Text(text = "Login",
+            Text(
+                text = "Login",
                 fontFamily = FontFamily(Font(R.font.nunito_regular)),
                 color = colorResource(R.color.cor_text_login),
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .align(Alignment.CenterVertically),
                 fontSize = 17.sp
-                )
+            )
             Icon(
                 painter = painterResource(R.drawable.seta_esquerda_back_24),
                 contentDescription = "Seta para esquerda",
@@ -90,21 +85,20 @@ fun ColumnRegister(modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(720.dp)
-                .offset(y= 100.dp)
-                .background(color= colorResource(R.color.cor_column_registre))
+                .offset(y = 110.dp)
         ) {
             Text(
                 "Crie sua conta",
                 fontSize = 30.sp,
                 color = colorResource(R.color.cor_registre),
                 fontFamily = FontFamily(Font(R.font.nunito_bold)),
-                modifier = Modifier.padding(top = 10.dp, start = 30.dp)
+                modifier = Modifier
+                    .padding(top = 10.dp, start = 30.dp)
             )
             Spacer(modifier = Modifier.height(10.dp))
             HorizontalDivider(
                 modifier = Modifier
-                    .padding( start = 30.dp, end = 60.dp)
+                    .padding(start = 30.dp, end = 60.dp)
                     .width(300.dp),
                 thickness = DividerDefaults.Thickness,
                 color = DividerDefaults.color
@@ -233,7 +227,7 @@ fun ColumnRegister(modifier: Modifier = Modifier) {
             Button(
                 onClick = { /*TODO*/ },
                 modifier = Modifier
-                    .offset(y = 190.dp, x = 55.dp)
+                    .offset(y = 120.dp, x = 55.dp)
                     .width(280.dp),
                 shape = Shapes().small,
                 colors = ButtonDefaults.buttonColors(colorResource(R.color.cor_card_footer))
