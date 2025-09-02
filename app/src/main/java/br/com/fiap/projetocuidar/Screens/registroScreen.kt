@@ -14,13 +14,6 @@ import br.com.fiap.projetocuidar.composables.ColumnRegister
 @Composable
 fun RegistroScreen(modifier: Modifier = Modifier) {
     ColumnRegister()
-    Box(
-        modifier = Modifier
-            .absoluteOffset(y = 680.dp)
-            .padding(top = 50.dp)
-    ) {
-        CardFooter(modifier = Modifier.align(alignment = Alignment.Center))
-    }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
