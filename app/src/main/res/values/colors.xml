@@ -10,4 +10,7 @@
     <color name="cor_botao">#E8FFA0</color>]
     <color name="cor_registre">#51701A</color>
     <color name="cor_card_footer">#75874F</color>
+    <color name="cor_column_registre">#F2F3F5</color>
+    <color name="cor_text_login">#8FA7B2</color>
+    <color name="titulo">#4D6F80</color>
 </resources>

@@ -14,10 +14,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
         val playServicesOk =
             GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) == ConnectionResult.SUCCESS
-
         setContent {
             ProjetoCuidarTheme {
                 AppNavHost(playServicesOk = playServicesOk)
