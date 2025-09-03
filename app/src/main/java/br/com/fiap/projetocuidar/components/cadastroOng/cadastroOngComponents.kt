@@ -104,13 +104,7 @@ fun CadastroOngComponents(modifier: Modifier = Modifier) {
                 thickness = DividerDefaults.Thickness,
                 color = DividerDefaults.color
             )
-            Text(
-                text = "Nome",
-                fontSize = 15.sp,
-                color = colorResource(R.color.cor_text_login),
-                fontFamily = FontFamily(Font(R.font.nunito_semibold)),
-                modifier = Modifier.padding(start = 32.dp, bottom = 2.dp)
-            )
+            TextCadastroOng("Nome")
             CaixasDeEntradaTextComponents(
                 modifier = Modifier,
                 value = nome.value,
@@ -122,13 +116,7 @@ fun CadastroOngComponents(modifier: Modifier = Modifier) {
                 ),
                 shape = Shapes().medium
             )
-            Text(
-                text = "Categoria",
-                fontSize = 15.sp,
-                color = colorResource(R.color.cor_text_login),
-                fontFamily = FontFamily(Font(R.font.nunito_semibold)),
-                modifier = Modifier.padding(start = 32.dp, bottom = 2.dp)
-            )
+            TextCadastroOng("Categoria")
             CaixasDeEntradaTextComponents(
                 modifier = Modifier,
                 value = categoria.value,
@@ -140,13 +128,7 @@ fun CadastroOngComponents(modifier: Modifier = Modifier) {
                 ),
                 shape = Shapes().medium
             )
-            Text(
-                text = "Sobre",
-                fontSize = 15.sp,
-                color = colorResource(R.color.cor_text_login),
-                fontFamily = FontFamily(Font(R.font.nunito_semibold)),
-                modifier = Modifier.padding(start = 32.dp, bottom = 2.dp)
-            )
+            TextCadastroOng("Sobre")
             CaixaDeEntradaMaior(
                 modifier = Modifier,
                 value = sobre.value,
@@ -179,13 +161,7 @@ fun CadastroOngComponents(modifier: Modifier = Modifier) {
                 ),
                 shape = Shapes().medium
             )
-            Text(
-                text = "Foto (url)",
-                fontSize = 15.sp,
-                color = colorResource(R.color.cor_text_login),
-                fontFamily = FontFamily(Font(R.font.nunito_semibold)),
-                modifier = Modifier.padding(start = 32.dp, bottom = 2.dp)
-            )
+            TextCadastroOng("Foto (url)")
             OutlinedTextField(
                 value = categoria.value,
                 onValueChange = { "" },
@@ -216,13 +192,7 @@ fun CadastroOngComponents(modifier: Modifier = Modifier) {
                 color = DividerDefaults.color
             )
             Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                text = "Instruções ",
-                fontSize = 15.sp,
-                color = colorResource(R.color.cor_text_login),
-                fontFamily = FontFamily(Font(R.font.nunito_semibold)),
-                modifier = Modifier.padding(start = 32.dp)
-            )
+            TextCadastroOng("Instruções")
             CaixaDeEntradaMaior(
                 modifier = Modifier,
                 value = "",
@@ -234,13 +204,7 @@ fun CadastroOngComponents(modifier: Modifier = Modifier) {
                 ),
                 shape = Shapes().medium
             )
-            Text(
-                text = "Horário das visitas",
-                fontSize = 15.sp,
-                color = colorResource(R.color.cor_text_login),
-                fontFamily = FontFamily(Font(R.font.nunito_semibold)),
-                modifier = Modifier.padding(start = 32.dp, top = 2.dp)
-            )
+            TextCadastroOng("Horário das visitas")
             CaixasDeEntradaTextComponents(
                 modifier = Modifier,
                 value = "",
@@ -252,32 +216,12 @@ fun CadastroOngComponents(modifier: Modifier = Modifier) {
                 ),
                 shape = Shapes().medium
             )
-//            OutlinedTextField(
-//                value = categoria.value,
-//                onValueChange = { "" },
-//                modifier = Modifier
-//                    .width(320.dp)
-//                    .size(40.dp)
-//                    .padding(start = 10.dp, top = 2.dp)
-//                    .offset(x = 20.dp),
-//                keyboardOptions = KeyboardOptions(
-//                    keyboardType = KeyboardType.Text,
-//                    capitalization = KeyboardCapitalization.Words
-//                ),
-//                shape = Shapes().medium
-//            )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .offset(y = 15.dp)
             ) {
-                Text(
-                    text = "Atende fim de semana?",
-                    fontSize = 15.sp,
-                    color = colorResource(R.color.cor_text_login),
-                    fontFamily = FontFamily(Font(R.font.nunito_semibold)),
-                    modifier = Modifier.padding(start = 32.dp)
-                )
+                TextCadastroOng("Atende fim de semana?")
                 Spacer(modifier = Modifier.width(80.dp))
                 Switch(
                     checked = fimDeSemana,

@@ -154,10 +154,7 @@ fun HomeComponents(modifier: Modifier = Modifier) {
                             .size(100.dp)
                     )
                 }
-                Spacer(
-                    modifier = Modifier
-                        .width(20.dp)
-                )
+                Spacer(modifier = Modifier.width(20.dp))
                 Card(
                     colors = CardDefaults.cardColors(containerColor = colorResource(R.color.white)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
