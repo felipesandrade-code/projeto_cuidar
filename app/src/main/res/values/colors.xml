@@ -18,4 +18,8 @@
     <color name="cor_texto_ver_mapa">#0089A5</color>
     <color name="card_horario_orfanato">#C2EEF7</color>
     <color name="card_fim_de_semana">#A1E9C5</color>
+    <color name="icone_info">#50D291</color>
+    <color name="icone_horario">#15BECC</color>"
+    <color name="text_fim_de_semana">#37C77F</color>
+    <color name="text_horario_orfanato">#6F98AA</color>
 </resources>

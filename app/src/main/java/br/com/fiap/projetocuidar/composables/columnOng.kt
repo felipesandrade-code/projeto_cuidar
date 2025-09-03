@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -74,24 +76,18 @@ fun ColumnOng(modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .offset(y = 80.dp)
+                .offset(y = 70.dp)
         ) {
-            Image(
-                painter = painterResource(R.drawable.img_1),
-                contentDescription = "Imagem crianças",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(250.dp)
-            )
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(40.dp))
             Text(
                 text = "Orf. Esperança",
                 color = colorResource(R.color.titulo),
-                fontSize = 19.sp,
+                fontSize = 25.sp,
                 fontFamily = FontFamily(Font(R.font.nunito_bold)),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
+            Spacer(modifier = Modifier.height(30.dp))
             Text(
                 text = "Presta assistência a crianças de 06 a 15 anos que se encontre em situação de risco e/ou vulnerabilidade social.",
                 color = colorResource(R.color.texto_orfanato),
@@ -99,7 +95,7 @@ fun ColumnOng(modifier: Modifier = Modifier) {
                 fontSize = 13.sp,
                 minLines = 2,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 10.dp, top = 5.dp, start = 10.dp, end = 10.dp)
+                modifier = Modifier.padding(bottom = 10.dp, top = 10.dp, start = 10.dp, end = 10.dp)
             )
             Card(
                 colors = CardDefaults.cardColors(containerColor = colorResource(R.color.white)),
@@ -153,6 +149,7 @@ fun ColumnOng(modifier: Modifier = Modifier) {
                 textAlign = TextAlign.Center
             )
 
+            Spacer(modifier = Modifier.height(30.dp))
             Row(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()
@@ -162,10 +159,26 @@ fun ColumnOng(modifier: Modifier = Modifier) {
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
-                        .size(150.dp)
-//                        .align(Alignment.CenterHorizontally)
+                        .size(140.dp)
                 ){
-                    Text(text = "Segunda à sexta 8h às 18h")
+                    Icon(
+                        painter = painterResource(R.drawable.icon_clock),
+                        contentDescription = "Ícone horário",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .offset(y = 12.dp, x = 12.dp),
+                        tint = colorResource(R.color.icone_horario)
+                    )
+                    Spacer(modifier = Modifier.height(30.dp))
+                    Text(
+                        text = "Segunda à sexta 8h às 18h",
+                        textAlign = TextAlign.Center,
+                        fontSize = 13.sp,
+                        fontFamily = FontFamily(Font(R.font.nunito_semibold)),
+                        modifier = Modifier
+                            .padding(end = 9.dp, start = 9.dp),
+                        color = colorResource(R.color.text_horario_orfanato)
+                    )
                 }
                 Spacer(modifier = Modifier.width(40.dp))
                 Card(
@@ -173,10 +186,61 @@ fun ColumnOng(modifier: Modifier = Modifier) {
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
-                        .size(150.dp)
-//                        .align(Alignment.CenterHorizontally)
+                        .size(140.dp),
                 ){
-                    Text(text = "Atendemos no fim de semana!")
+                    Icon(
+                        painter = painterResource(R.drawable.icons_info),
+                        contentDescription = "Ícone informação",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .offset(y = 12.dp, x = 12.dp),
+                        tint = colorResource(R.color.icone_info)
+                    )
+                    Spacer(modifier = Modifier.height(30.dp))
+                    Text(
+                        text = "Atendemos no fim de semana!",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .padding(end = 12.dp, start = 12.dp)
+                        ,
+                        fontSize = 13.sp,
+                        fontFamily = FontFamily(Font(R.font.nunito_semibold)),
+                        color = colorResource(R.color.text_fim_de_semana)
+                    )
+                }
+            }
+            Button(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .offset(y = 60.dp)
+                ,
+                colors = ButtonDefaults.buttonColors(colorResource(R.color.cor_card_footer)),
+                shape = RoundedCornerShape(8.dp)
+            ){
+                Row(
+                    modifier = Modifier
+                        .width(250.dp),
+                    horizontalArrangement = Arrangement.Center
+                ){
+                    Icon(
+                        painter = painterResource(R.drawable.icon_whatsapp),
+                        contentDescription = "Ícone whatsapp",
+                        modifier = Modifier
+                            .size(30.dp)
+                            .align(Alignment.CenterVertically)
+                        ,
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = "Entrar em contato",
+                        color = colorResource(R.color.white),
+                        fontFamily = FontFamily(Font(R.font.nunito_extrabold)),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .align(Alignment.CenterVertically)
+                    )
                 }
             }
         }
