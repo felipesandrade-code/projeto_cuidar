@@ -1,4 +1,4 @@
-package br.com.fiap.projetocuidar.composables
+package br.com.fiap.projetocuidar.components.registroUsuario
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.sp
 import br.com.fiap.projetocuidar.R
 
 @Composable
-fun ColumnRegister(modifier: Modifier = Modifier) {
+fun RegisterComponents(modifier: Modifier = Modifier) {
     val senha = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
     val nome = remember { mutableStateOf("") }
@@ -55,33 +55,7 @@ fun ColumnRegister(modifier: Modifier = Modifier) {
             .background(color = colorResource(R.color.cor_column_registre))
     )
     {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-                .background(color = colorResource(R.color.white))
-                .offset(y = 10.dp),
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = "Login",
-                fontFamily = FontFamily(Font(R.font.nunito_regular)),
-                color = colorResource(R.color.cor_text_login),
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .align(Alignment.CenterVertically),
-                fontSize = 17.sp
-            )
-            Icon(
-                painter = painterResource(R.drawable.seta_esquerda_back_24),
-                contentDescription = "Seta para esquerda",
-                modifier = Modifier
-                    .size(25.dp)
-                    .align(alignment = Alignment.CenterVertically)
-                    .offset(x = -180.dp),
-                tint = colorResource(R.color.cor_registre)
-            )
-        }
+        SuperiorRegister()
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -112,17 +86,11 @@ fun ColumnRegister(modifier: Modifier = Modifier) {
                 modifier = Modifier.padding(start = 32.dp)
             )
             Spacer(modifier = Modifier.height(5.dp))
-            OutlinedTextField(
+            CaixaDeEntradaEmail(
+                modifier = Modifier,
                 value = email.value,
-                onValueChange = { "" },
-                modifier = Modifier
-                    .width(320.dp)
-                    .size(40.dp)
-                    .padding(10.dp)
-                    .offset(x = 20.dp),
-                placeholder = {
-                    Text(text = "EX: fulano@beltrano.com ")
-                },
+                onvalueChange = { "" },
+                keyboardType = KeyboardType.Email,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email,
                     capitalization = KeyboardCapitalization.Words
@@ -138,14 +106,11 @@ fun ColumnRegister(modifier: Modifier = Modifier) {
                 modifier = Modifier.padding(start = 32.dp)
             )
             Spacer(modifier = Modifier.height(5.dp))
-            OutlinedTextField(
+            CaixaDeEntradaString(
+                modifier = Modifier,
                 value = nome.value,
-                onValueChange = { "" },
-                modifier = Modifier
-                    .width(320.dp)
-                    .size(40.dp)
-                    .padding(10.dp)
-                    .offset(x = 20.dp),
+                onvalueChange = { "" },
+                keyboardType = KeyboardType.Text,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
                     capitalization = KeyboardCapitalization.Words
@@ -161,17 +126,11 @@ fun ColumnRegister(modifier: Modifier = Modifier) {
                 modifier = Modifier.padding(start = 32.dp)
             )
             Spacer(modifier = Modifier.height(5.dp))
-            OutlinedTextField(
+            CaixaDeEntradaString(
+                modifier = Modifier,
                 value = sobrenome.value,
-                onValueChange = { "" },
-                modifier = Modifier
-                    .width(320.dp)
-                    .size(40.dp)
-                    .padding(10.dp)
-                    .offset(x = 20.dp),
-                placeholder = {
-                    Text(text = "EX: Andrade")
-                },
+                onvalueChange = { "" },
+                keyboardType = KeyboardType.Text,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
                     capitalization = KeyboardCapitalization.Words
@@ -187,16 +146,13 @@ fun ColumnRegister(modifier: Modifier = Modifier) {
                 modifier = Modifier.padding(start = 32.dp)
             )
             Spacer(modifier = Modifier.height(5.dp))
-            OutlinedTextField(
+            CaixaDeEntradaTelefone(
+                modifier = Modifier,
                 value = telefone.value,
-                onValueChange = { "" },
-                modifier = Modifier
-                    .width(320.dp)
-                    .size(40.dp)
-                    .padding(10.dp)
-                    .offset(x = 20.dp),
+                onvalueChange = { "" },
+                keyboardType = KeyboardType.Phone,
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
+                    keyboardType = KeyboardType.Phone,
                     capitalization = KeyboardCapitalization.Words
                 ),
                 shape = Shapes().medium
@@ -210,36 +166,18 @@ fun ColumnRegister(modifier: Modifier = Modifier) {
                 modifier = Modifier.padding(start = 32.dp)
             )
             Spacer(modifier = Modifier.height(5.dp))
-            OutlinedTextField(
+            CaixaDeEntradaSenha(
+                modifier = Modifier,
                 value = senha.value,
-                onValueChange = { "" },
-                modifier = Modifier
-                    .width(320.dp)
-                    .size(40.dp)
-                    .padding(10.dp)
-                    .offset(x = 20.dp),
+                onvalueChange = {""},
+                keyboardType = KeyboardType.Password,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
                     capitalization = KeyboardCapitalization.Words
                 ),
                 shape = Shapes().medium
             )
-            Button(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-                    .offset(y = 120.dp, x = 55.dp)
-                    .width(280.dp),
-                shape = Shapes().small,
-                colors = ButtonDefaults.buttonColors(colorResource(R.color.cor_card_footer))
-            ) {
-                Text(
-                    text = "Criar",
-                    fontSize = 15.sp,
-                    color = colorResource(R.color.white),
-                    fontFamily = FontFamily(Font(R.font.nunito_extrabold)),
-                    modifier = Modifier.padding(horizontal = 30.dp)
-                )
-            }
+            ButtonRegistro()
             Text(
                 text = "Já tem uma conta?",
                 fontSize = 15.sp,
@@ -255,5 +193,5 @@ fun ColumnRegister(modifier: Modifier = Modifier) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun ColumnRegisterPreview() {
-    ColumnRegister()
+    RegisterComponents()
 }

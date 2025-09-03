@@ -1,6 +1,5 @@
-package br.com.fiap.projetocuidar.composables
+package br.com.fiap.projetocuidar.components.ong
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,14 +29,12 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fiap.projetocuidar.R
 
 @Composable
-fun ColumnOng(modifier: Modifier = Modifier) {
+fun OngComponents(modifier: Modifier = Modifier) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -87,7 +84,7 @@ fun ColumnOng(modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(15.dp))
             Text(
                 text = "Presta assistência a crianças de 06 a 15 anos que se encontre em situação de risco e/ou vulnerabilidade social.",
                 color = colorResource(R.color.texto_orfanato),
@@ -95,7 +92,7 @@ fun ColumnOng(modifier: Modifier = Modifier) {
                 fontSize = 13.sp,
                 minLines = 2,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 10.dp, top = 10.dp, start = 10.dp, end = 10.dp)
+                modifier = Modifier.padding(10.dp)
             )
             Card(
                 colors = CardDefaults.cardColors(containerColor = colorResource(R.color.white)),
@@ -250,5 +247,5 @@ fun ColumnOng(modifier: Modifier = Modifier) {
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 private fun ColumnOngPreview() {
-    ColumnOng()
+    OngComponents()
 }
