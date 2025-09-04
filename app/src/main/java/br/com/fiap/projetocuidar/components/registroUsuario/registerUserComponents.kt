@@ -40,8 +40,6 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
     var nome by remember { mutableStateOf("") }
     var sobrenome by remember { mutableStateOf("") }
     var telefone by remember { mutableStateOf("") }
-    var instrucoes by remember { mutableStateOf("") }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -69,9 +67,9 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(5.dp))
             CaixaDeEntradaComponent(
                 Modifier,
-                value = instrucoes,
+                value = email,
                 onvalueChange = { "" },
-                keyboardType = KeyboardType.Text,
+                keyboardType = KeyboardType.Email,
                 capitalization = KeyboardCapitalization.Words,
                 caixaDeEntradaWidth = 300.dp,
                 caixaDeEntradaPaddingStart = 0.dp,
@@ -79,6 +77,7 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
                 caixaDeEntradaOffsetX = 30.dp,
                 caixaDeEntradaOffsetY = 0.dp,
                 caixaDeEntradaSize = 30.dp,
+                singleLine = false,
             )
             Spacer(modifier = Modifier.height(10.dp))
             Text(
@@ -91,7 +90,7 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(5.dp))
             CaixaDeEntradaComponent(
                 Modifier,
-                value = instrucoes,
+                value = nome,
                 onvalueChange = { "" },
                 keyboardType = KeyboardType.Text,
                 capitalization = KeyboardCapitalization.Words,
@@ -101,6 +100,7 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
                 caixaDeEntradaOffsetX = 30.dp,
                 caixaDeEntradaOffsetY = 0.dp,
                 caixaDeEntradaSize = 30.dp,
+                singleLine = false
             )
             Spacer(modifier = Modifier.size(20.dp))
             Text(
@@ -113,7 +113,7 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(5.dp))
             CaixaDeEntradaComponent(
                 Modifier,
-                value = instrucoes,
+                value = sobrenome,
                 onvalueChange = { "" },
                 keyboardType = KeyboardType.Text,
                 capitalization = KeyboardCapitalization.Words,
@@ -123,6 +123,7 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
                 caixaDeEntradaOffsetX = 30.dp,
                 caixaDeEntradaOffsetY = 0.dp,
                 caixaDeEntradaSize = 30.dp,
+                singleLine = false
             )
             Spacer(modifier = Modifier.height(20.dp))
             Text(
@@ -135,16 +136,17 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(5.dp))
             CaixaDeEntradaComponent(
                 Modifier,
-                value = instrucoes,
+                value = telefone,
                 onvalueChange = { "" },
-                keyboardType = KeyboardType.Text,
-                capitalization = KeyboardCapitalization.Words,
+                keyboardType = KeyboardType.Number,
+                capitalization = KeyboardCapitalization.Unspecified,
                 caixaDeEntradaWidth = 300.dp,
                 caixaDeEntradaPaddingStart = 0.dp,
                 caixaDeEntradaPaddingTop = 0.dp,
                 caixaDeEntradaOffsetX = 30.dp,
                 caixaDeEntradaOffsetY = 0.dp,
                 caixaDeEntradaSize = 30.dp,
+                singleLine = false
             )
             Spacer(modifier = Modifier.height(20.dp))
             Text(
@@ -157,16 +159,17 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(5.dp))
             CaixaDeEntradaComponent(
                 Modifier,
-                value = instrucoes,
+                value = senha,
                 onvalueChange = { "" },
-                keyboardType = KeyboardType.Text,
-                capitalization = KeyboardCapitalization.Words,
+                keyboardType = KeyboardType.Password,
+                capitalization = KeyboardCapitalization.None,
                 caixaDeEntradaWidth = 300.dp,
                 caixaDeEntradaPaddingStart = 0.dp,
                 caixaDeEntradaPaddingTop = 0.dp,
                 caixaDeEntradaOffsetX = 30.dp,
                 caixaDeEntradaOffsetY = 0.dp,
                 caixaDeEntradaSize = 30.dp,
+                singleLine = false
             )
             ButtonsComponent(
                 onClick = {},
