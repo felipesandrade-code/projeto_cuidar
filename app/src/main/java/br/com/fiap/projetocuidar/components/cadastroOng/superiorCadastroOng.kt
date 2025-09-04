@@ -1,4 +1,4 @@
-package br.com.fiap.projetocuidar.components.registroUsuario
+package br.com.fiap.projetocuidar.components.cadastroOng
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,35 +22,32 @@ import androidx.compose.ui.unit.sp
 import br.com.fiap.projetocuidar.R
 
 @Composable
-fun SuperiorRegister(
-    modifier: Modifier = Modifier,
-    text: String,
-) {
+fun SuperiorCadastroOng(modifier: Modifier = Modifier) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp)
             .background(color = colorResource(R.color.white))
-            .offset(y = 10.dp),
-        horizontalArrangement = Arrangement.Center,
+            .height(85.dp),
+        horizontalArrangement = Arrangement.Absolute.Center
     ) {
-        Text(
-            text = "Login",
-            fontFamily = FontFamily(Font(R.font.nunito_regular)),
-            color = colorResource(R.color.cor_text_login),
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .align(Alignment.CenterVertically),
-            fontSize = 17.sp
-        )
         Icon(
             painter = painterResource(R.drawable.seta_esquerda_back_24),
             contentDescription = "Seta para esquerda",
             modifier = Modifier
                 .size(25.dp)
                 .align(alignment = Alignment.CenterVertically)
-                .offset(x = -180.dp),
+                .offset(y = 8.dp, x = -120.dp),
             tint = colorResource(R.color.cor_registre)
+        )
+        Text(
+            text = "Orfanato",
+            fontFamily = FontFamily(Font(R.font.nunito_regular)),
+            color = colorResource(R.color.cor_text_login),
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .offset(y = 8.dp),
+            fontSize = 17.sp
         )
     }
 }

@@ -1,10 +1,8 @@
 package br.com.fiap.projetocuidar.components.registroUsuario
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,41 +10,36 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DividerDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fiap.projetocuidar.R
+import br.com.fiap.projetocuidar.components.cadastroOng.CaixasDeEntradaTextComponents
+import br.com.fiap.projetocuidar.components.cadastroOng.DividerComponent
+import br.com.fiap.projetocuidar.components.cadastroOng.TituloComponents
 
 @Composable
 fun RegisterComponents(modifier: Modifier = Modifier) {
-    val senha = remember { mutableStateOf("") }
-    val email = remember { mutableStateOf("") }
-    val nome = remember { mutableStateOf("") }
-    val sobrenome = remember { mutableStateOf("") }
-    val telefone = remember { mutableStateOf("") }
+    var senha by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var nome by remember { mutableStateOf("") }
+    var sobrenome by remember { mutableStateOf("") }
+    var telefone by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier
@@ -55,127 +48,99 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
             .background(color = colorResource(R.color.cor_column_registre))
     )
     {
-        SuperiorRegister()
+        SuperiorRegister(Modifier, stringResource(R.string.text_login))
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .offset(y = 110.dp)
         ) {
-            Text(
-                "Crie sua conta",
-                fontSize = 30.sp,
-                color = colorResource(R.color.cor_registre),
-                fontFamily = FontFamily(Font(R.font.nunito_bold)),
-                modifier = Modifier
-                    .padding(top = 10.dp, start = 30.dp)
-            )
+            TituloComponents(Modifier, "Crie sua conta", 30.sp)
             Spacer(modifier = Modifier.height(10.dp))
-            HorizontalDivider(
-                modifier = Modifier
-                    .padding(start = 30.dp, end = 60.dp)
-                    .width(300.dp),
-                thickness = DividerDefaults.Thickness,
-                color = DividerDefaults.color
-            )
+            DividerComponent()
             Spacer(modifier = Modifier.height(20.dp))
             Text(
-                text = "Email",
+                text = stringResource(R.string.text_email),
                 fontSize = 15.sp,
                 color = colorResource(R.color.cor_text_login),
                 fontFamily = FontFamily(Font(R.font.nunito_semibold)),
                 modifier = Modifier.padding(start = 32.dp)
             )
             Spacer(modifier = Modifier.height(5.dp))
-            CaixaDeEntradaEmail(
-                modifier = Modifier,
-                value = email.value,
+            CaixasDeEntradaTextComponents(
+                value = email,
                 onvalueChange = { "" },
-                keyboardType = KeyboardType.Email,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email,
                     capitalization = KeyboardCapitalization.Words
                 ),
-                shape = Shapes().medium
             )
             Spacer(modifier = Modifier.height(10.dp))
             Text(
-                "Nome",
+                stringResource(R.string.text_name),
                 fontSize = 15.sp,
                 color = colorResource(R.color.cor_text_login),
                 fontFamily = FontFamily(Font(R.font.nunito_semibold)),
                 modifier = Modifier.padding(start = 32.dp)
             )
             Spacer(modifier = Modifier.height(5.dp))
-            CaixaDeEntradaString(
-                modifier = Modifier,
-                value = nome.value,
+            CaixasDeEntradaTextComponents(
+                value = nome,
                 onvalueChange = { "" },
-                keyboardType = KeyboardType.Text,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
                     capitalization = KeyboardCapitalization.Words
                 ),
-                shape = Shapes().medium
             )
             Spacer(modifier = Modifier.size(20.dp))
             Text(
-                "Sobrenome",
+                stringResource(R.string.text_surname),
                 fontSize = 15.sp,
                 color = colorResource(R.color.cor_text_login),
                 fontFamily = FontFamily(Font(R.font.nunito_semibold)),
                 modifier = Modifier.padding(start = 32.dp)
             )
             Spacer(modifier = Modifier.height(5.dp))
-            CaixaDeEntradaString(
-                modifier = Modifier,
-                value = sobrenome.value,
-                onvalueChange = { "" },
-                keyboardType = KeyboardType.Text,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    capitalization = KeyboardCapitalization.Words
-                ),
-                shape = Shapes().medium
+            CaixasDeEntradaTextComponents(
+                    value = sobrenome,
+                    onvalueChange = { "" },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        capitalization = KeyboardCapitalization.Words
+                    ),
             )
             Spacer(modifier = Modifier.height(20.dp))
             Text(
-                "Telefone",
+                stringResource(R.string.text_telefone),
                 fontSize = 15.sp,
                 color = colorResource(R.color.cor_text_login),
                 fontFamily = FontFamily(Font(R.font.nunito_semibold)),
                 modifier = Modifier.padding(start = 32.dp)
             )
             Spacer(modifier = Modifier.height(5.dp))
-            CaixaDeEntradaTelefone(
-                modifier = Modifier,
-                value = telefone.value,
+            CaixasDeEntradaTextComponents(
+                value = telefone,
                 onvalueChange = { "" },
-                keyboardType = KeyboardType.Phone,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Phone,
                     capitalization = KeyboardCapitalization.Words
                 ),
-                shape = Shapes().medium
             )
             Spacer(modifier = Modifier.height(20.dp))
             Text(
-                text = "Senha",
+                text = stringResource(R.string.text_senha),
                 fontSize = 15.sp,
                 color = colorResource(R.color.cor_text_login),
                 fontFamily = FontFamily(Font(R.font.nunito_semibold)),
                 modifier = Modifier.padding(start = 32.dp)
             )
             Spacer(modifier = Modifier.height(5.dp))
-            CaixaDeEntradaSenha(
-                modifier = Modifier,
-                value = senha.value,
-                onvalueChange = {""},
-                keyboardType = KeyboardType.Password,
+            CaixasDeEntradaTextComponents(
+                value = senha,
+                onvalueChange = { "" },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
                     capitalization = KeyboardCapitalization.Words
                 ),
-                shape = Shapes().medium
             )
             ButtonRegistro()
             Text(

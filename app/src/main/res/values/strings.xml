@@ -1,5 +1,12 @@
 <resources>
     <string name="app_name">Projeto Cuidar+</string>
-    <string name="botao_login">Login</string>
     <string name ="text_login">Login</string>
+    <string name = "text_senha">Senha</string>
+    <string name = "text_cadastrar">Cadastrar</string>
+    <string name = "text_email">Email</string>
+    <string name = "text_name">Nome</string>
+    <string name = "text_surname">Sobrenome</string>
+    <string name = "text_telefone">Telefone</string>
+    <string name = "text_registro">Crie sua conta</string>
+    <string name = "text_categoria">Categoria</string>
 </resources>

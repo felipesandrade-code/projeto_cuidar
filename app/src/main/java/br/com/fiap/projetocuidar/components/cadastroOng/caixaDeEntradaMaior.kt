@@ -1,10 +1,9 @@
-package br.com.fiap.projetocuidar.components.registroUsuario
+package br.com.fiap.projetocuidar.components.cadastroOng
 
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Shapes
@@ -15,25 +14,22 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CaixaDeEntradaTelefone(
-    modifier: Modifier = Modifier,
+fun CaixaDeEntradaMaior(
+    modifier: Modifier,
     value: String,
     onvalueChange: (String) -> Unit,
-    keyboardType: KeyboardType,
-    keyboardOptions: KeyboardOptions,
-    shape: CornerBasedShape
 ) {
     OutlinedTextField(
-        value = "",
-        onValueChange = { "" },
-        modifier = Modifier
+        value = value,
+        onValueChange = {onvalueChange(value)},
+        modifier = modifier
             .width(320.dp)
-            .size(40.dp)
-            .padding(10.dp)
+            .size(90.dp)
+            .padding(start = 10.dp, top = 2.dp)
             .offset(x = 20.dp),
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Text,
-            capitalization = KeyboardCapitalization.Words
+                keyboardType = KeyboardType.Text,
+        capitalization = KeyboardCapitalization.Words,
         ),
         shape = Shapes().medium
     )

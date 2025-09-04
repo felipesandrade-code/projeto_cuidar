@@ -1,7 +1,6 @@
 package br.com.fiap.projetocuidar.components.cadastroOng
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,16 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DividerDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -29,116 +20,65 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fiap.projetocuidar.R
 
+
 @Composable
 fun CadastroOngComponents(modifier: Modifier = Modifier) {
-    val nome = remember { mutableStateOf("") }
-    val categoria = remember { mutableStateOf("") }
-    val sobre = remember { mutableStateOf("") }
-    val telefone = remember { mutableStateOf("") }
-    val foto = remember { mutableStateOf("") }
+    var nome by remember { mutableStateOf("") }
+    var categoria by remember { mutableStateOf("") }
+    var sobre by remember { mutableStateOf("") }
+    var telefone by remember { mutableStateOf("") }
+    var foto by remember { mutableStateOf("") }
     var fimDeSemana by remember { mutableStateOf(false) }
+    var instrucoes by remember { mutableStateOf("") }
 
-    Box(modifier = Modifier
+    Box(modifier = Modifier //Box de toda a aplicação
         .background(colorResource(R.color.cor_column_registre))
         .fillMaxSize()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = colorResource(R.color.white))
-                .align(Alignment.TopCenter)
-                .height(85.dp),
-            horizontalArrangement = Arrangement.Absolute.Center
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.seta_esquerda_back_24),
-                contentDescription = "Seta para esquerda",
-                modifier = Modifier
-                    .size(25.dp)
-                    .align(alignment = Alignment.CenterVertically)
-                    .offset(y = 8.dp, x = -120.dp),
-                tint = colorResource(R.color.cor_registre)
-            )
-            Text(
-                text = "Orfanato",
-                fontFamily = FontFamily(Font(R.font.nunito_regular)),
-                color = colorResource(R.color.cor_text_login),
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .offset(y = 8.dp),
-                fontSize = 17.sp
-            )
-        }
+        SuperiorCadastroOng()
+        //Formulário com dados importantes sobre o orfanato
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .offset(y = 80.dp)
         ) {
-            Text(
-                "Dados",
-                fontSize = 25.sp,
-                color = colorResource(R.color.cor_registre),
-                fontFamily = FontFamily(Font(R.font.nunito_bold)),
-                modifier = Modifier
-                    .padding(top = 10.dp, start = 30.dp)
-            )
-            HorizontalDivider(
-                modifier = Modifier
-                    .padding(start = 30.dp, end = 60.dp)
-                    .width(300.dp),
-                thickness = DividerDefaults.Thickness,
-                color = DividerDefaults.color
-            )
-            TextCadastroOng("Nome")
+            TituloComponents(Modifier, "Dados", 25.sp)
+            DividerComponent()
+            TextCadastroOng(stringResource(R.string.text_name))
             CaixasDeEntradaTextComponents(
-                modifier = Modifier,
-                value = nome.value,
+                value = nome,
                 onvalueChange = { "" },
-                keyboardType = KeyboardType.Text,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
                     capitalization = KeyboardCapitalization.Words
                 ),
-                shape = Shapes().medium
             )
-            TextCadastroOng("Categoria")
+            TextCadastroOng(stringResource(R.string.text_categoria))
             CaixasDeEntradaTextComponents(
-                modifier = Modifier,
-                value = categoria.value,
+                value = categoria,
                 onvalueChange = { "" },
-                keyboardType = KeyboardType.Text,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
                     capitalization = KeyboardCapitalization.Words
                 ),
-                shape = Shapes().medium
             )
             TextCadastroOng("Sobre")
             CaixaDeEntradaMaior(
                 modifier = Modifier,
-                value = sobre.value,
+                value = sobre,
                 onvalueChange = { "" },
-                keyboardType = KeyboardType.Text,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    capitalization = KeyboardCapitalization.Words
-                ),
-                shape = Shapes().medium
             )
             Text(
                 text = "Telefone",
@@ -147,74 +87,42 @@ fun CadastroOngComponents(modifier: Modifier = Modifier) {
                 fontFamily = FontFamily(Font(R.font.nunito_semibold)),
                 modifier = Modifier.padding(start = 32.dp, bottom = 2.dp)
             )
-            OutlinedTextField(
-                value = categoria.value,
-                onValueChange = { "" },
-                modifier = Modifier
-                    .width(320.dp)
-                    .size(40.dp)
-                    .padding(start = 10.dp, top = 2.dp)
-                    .offset(x = 20.dp),
+            CaixasDeEntradaTextComponents(
+                value = telefone,
+                onvalueChange = { "" },
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
+                    keyboardType = KeyboardType.Phone,
                     capitalization = KeyboardCapitalization.Words
                 ),
-                shape = Shapes().medium
             )
             TextCadastroOng("Foto (url)")
-            OutlinedTextField(
-                value = categoria.value,
-                onValueChange = { "" },
-                modifier = Modifier
-                    .width(320.dp)
-                    .size(40.dp)
-                    .padding(start = 10.dp, top = 2.dp)
-                    .offset(x = 20.dp),
+            CaixasDeEntradaTextComponents(
+                value = foto,
+                onvalueChange = { "" },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Uri,
                     capitalization = KeyboardCapitalization.Words
                 ),
-                shape = Shapes().medium
             )
-            Text(
-                text = "Visitação",
-                fontSize = 25.sp,
-                color = colorResource(R.color.cor_registre),
-                fontFamily = FontFamily(Font(R.font.nunito_bold)),
-                modifier = Modifier
-                    .padding(top = 10.dp, start = 30.dp)
-            )
-            HorizontalDivider(
-                modifier = Modifier
-                    .padding(start = 30.dp, end = 60.dp)
-                    .width(300.dp),
-                thickness = DividerDefaults.Thickness,
-                color = DividerDefaults.color
-            )
+
+            //Intruções e horário sobre a Visitação do orfanato.
+            TituloComponents(modifier = Modifier, text = "Visitação", fontSize = 25.sp)
+            DividerComponent()
             Spacer(modifier = Modifier.height(10.dp))
             TextCadastroOng("Instruções")
             CaixaDeEntradaMaior(
                 modifier = Modifier,
-                value = "",
+                value = instrucoes,
                 onvalueChange = { "" },
-                keyboardType = KeyboardType.Text,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    capitalization = KeyboardCapitalization.Words
-                ),
-                shape = Shapes().medium
             )
             TextCadastroOng("Horário das visitas")
             CaixasDeEntradaTextComponents(
-                modifier = Modifier,
                 value = "",
                 onvalueChange = { "" },
-                keyboardType = KeyboardType.Text,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
                     capitalization = KeyboardCapitalization.Words
                 ),
-                shape = Shapes().medium
             )
             Row(
                 modifier = Modifier
@@ -235,21 +143,7 @@ fun CadastroOngComponents(modifier: Modifier = Modifier) {
                         .offset(y = -18.dp),
                 )
             }
-            Button(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally),
-                shape = Shapes().small,
-                colors = ButtonDefaults.buttonColors(colorResource(R.color.cor_card_footer))
-            ) {
-                Text(
-                    text = "Criar",
-                    fontSize = 15.sp,
-                    color = colorResource(R.color.white),
-                    fontFamily = FontFamily(Font(R.font.nunito_extrabold)),
-                    modifier = Modifier.padding(horizontal = 30.dp)
-                )
-            }
+            buttonCadastroOng(onClick = {})
         }
     }
 }

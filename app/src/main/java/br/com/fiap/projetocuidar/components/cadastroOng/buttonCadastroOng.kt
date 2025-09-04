@@ -1,31 +1,27 @@
-package br.com.fiap.projetocuidar.components.login
+package br.com.fiap.projetocuidar.components.cadastroOng
 
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Shapes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import br.com.fiap.projetocuidar.R
 import br.com.fiap.projetocuidar.components.TextButtons
 
+
 @Composable
-fun BotaoLogin(
-    modifier: Modifier = Modifier,
+fun buttonCadastroOng(
     onClick: () -> Unit
-) {
+){
     Button(
-        onClick = { onClick },
-        modifier = Modifier
-            .width(280.dp)
-            .offset(y = 20.dp, x = 55.dp),
+        onClick = { onClick() },
+        modifier = Modifier.offset(x = 100.dp),
         shape = Shapes().small,
         colors = ButtonDefaults.buttonColors(colorResource(R.color.cor_card_footer))
     ) {
-        TextButtons(Modifier, stringResource(R.string.text_login))
+        TextButtons(Modifier, "Cadastrar")
     }
 }
