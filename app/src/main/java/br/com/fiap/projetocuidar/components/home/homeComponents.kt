@@ -1,5 +1,6 @@
 package br.com.fiap.projetocuidar.components.home
 
+import android.media.tv.TvContract
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fiap.projetocuidar.R
+import br.com.fiap.projetocuidar.components.LogoComponent
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -51,11 +53,7 @@ fun HomeComponents(modifier: Modifier = Modifier) {
                 .padding(16.dp)
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
-                Image(
-                    painter = painterResource(R.drawable.logo),
-                    contentDescription = "Logo",
-                    modifier = Modifier.size(120.dp)
-                )
+                LogoComponent("Logo", 120.dp, 0.dp, 0.dp)
                 Spacer(Modifier.weight(1f))
                 Icon(
                     imageVector = Icons.Filled.Menu,

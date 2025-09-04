@@ -13,7 +13,6 @@ import br.com.fiap.projetocuidar.R
 
 @Composable
 fun TextButtons(
-    modifier: Modifier = Modifier,
     text: String
 ) {
     Text(

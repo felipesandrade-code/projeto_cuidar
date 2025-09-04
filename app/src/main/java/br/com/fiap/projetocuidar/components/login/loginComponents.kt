@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import br.com.fiap.projetocuidar.R
+import br.com.fiap.projetocuidar.components.ImgComponent
+import br.com.fiap.projetocuidar.components.LogoComponent
 
 
 @Composable
@@ -32,7 +34,7 @@ fun LoginComponents(
     )
     {
         Row(modifier = Modifier.fillMaxWidth()) {
-            ImagemLogin()
+            ImgComponent()
         }
         Column(
             modifier = Modifier
@@ -44,7 +46,7 @@ fun LoginComponents(
                     shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
                 ),
         ) {
-            LogoLogin(Modifier)
+            LogoComponent("Logo",logoSize = 150.dp, logoOffsetX = 10.dp, logoOffsetY = 20.dp)
             Spacer(modifier = Modifier.height(40.dp))
             InputLogin(Modifier, navController)
         }

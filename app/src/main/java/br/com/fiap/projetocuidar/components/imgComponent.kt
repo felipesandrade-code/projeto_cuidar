@@ -1,4 +1,4 @@
-package br.com.fiap.projetocuidar.components.login
+package br.com.fiap.projetocuidar.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import br.com.fiap.projetocuidar.R
 
 @Composable
-fun ImagemLogin(modifier: Modifier = Modifier) {
+fun ImgComponent(modifier: Modifier = Modifier) {
     Image(
         painter = painterResource(R.drawable.kids_happy),
         contentDescription = "Crianças abraçadas",

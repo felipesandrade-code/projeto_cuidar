@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -34,6 +35,15 @@ fun SuperiorRegister(
             .offset(y = 10.dp),
         horizontalArrangement = Arrangement.Center,
     ) {
+        Icon(
+            painter = painterResource(R.drawable.seta_esquerda_back_24),
+            contentDescription = "Seta para esquerda",
+            modifier = Modifier
+                .size(25.dp)
+                .align(alignment = Alignment.CenterVertically)
+                .offset(x = -130.dp),
+            tint = colorResource(R.color.cor_registre)
+        )
         Text(
             text = "Login",
             fontFamily = FontFamily(Font(R.font.nunito_regular)),
@@ -42,15 +52,6 @@ fun SuperiorRegister(
             modifier = Modifier
                 .align(Alignment.CenterVertically),
             fontSize = 17.sp
-        )
-        Icon(
-            painter = painterResource(R.drawable.seta_esquerda_back_24),
-            contentDescription = "Seta para esquerda",
-            modifier = Modifier
-                .size(25.dp)
-                .align(alignment = Alignment.CenterVertically)
-                .offset(x = -180.dp),
-            tint = colorResource(R.color.cor_registre)
         )
     }
 }

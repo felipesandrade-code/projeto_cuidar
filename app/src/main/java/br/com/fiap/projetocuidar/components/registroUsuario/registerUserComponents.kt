@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,9 +28,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fiap.projetocuidar.R
-import br.com.fiap.projetocuidar.components.cadastroOng.CaixasDeEntradaTextComponents
-import br.com.fiap.projetocuidar.components.cadastroOng.DividerComponent
-import br.com.fiap.projetocuidar.components.cadastroOng.TituloComponents
+import br.com.fiap.projetocuidar.components.ButtonsComponent
+import br.com.fiap.projetocuidar.components.CaixaDeEntradaComponent
+import br.com.fiap.projetocuidar.components.DividerComponent
+import br.com.fiap.projetocuidar.components.TituloComponents
 
 @Composable
 fun RegisterComponents(modifier: Modifier = Modifier) {
@@ -40,6 +40,7 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
     var nome by remember { mutableStateOf("") }
     var sobrenome by remember { mutableStateOf("") }
     var telefone by remember { mutableStateOf("") }
+    var instrucoes by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier
@@ -66,13 +67,18 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
                 modifier = Modifier.padding(start = 32.dp)
             )
             Spacer(modifier = Modifier.height(5.dp))
-            CaixasDeEntradaTextComponents(
-                value = email,
+            CaixaDeEntradaComponent(
+                Modifier,
+                value = instrucoes,
                 onvalueChange = { "" },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email,
-                    capitalization = KeyboardCapitalization.Words
-                ),
+                keyboardType = KeyboardType.Text,
+                capitalization = KeyboardCapitalization.Words,
+                caixaDeEntradaWidth = 300.dp,
+                caixaDeEntradaPaddingStart = 0.dp,
+                caixaDeEntradaPaddingTop = 0.dp,
+                caixaDeEntradaOffsetX = 30.dp,
+                caixaDeEntradaOffsetY = 0.dp,
+                caixaDeEntradaSize = 30.dp,
             )
             Spacer(modifier = Modifier.height(10.dp))
             Text(
@@ -83,13 +89,18 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
                 modifier = Modifier.padding(start = 32.dp)
             )
             Spacer(modifier = Modifier.height(5.dp))
-            CaixasDeEntradaTextComponents(
-                value = nome,
+            CaixaDeEntradaComponent(
+                Modifier,
+                value = instrucoes,
                 onvalueChange = { "" },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    capitalization = KeyboardCapitalization.Words
-                ),
+                keyboardType = KeyboardType.Text,
+                capitalization = KeyboardCapitalization.Words,
+                caixaDeEntradaWidth = 300.dp,
+                caixaDeEntradaPaddingStart = 0.dp,
+                caixaDeEntradaPaddingTop = 0.dp,
+                caixaDeEntradaOffsetX = 30.dp,
+                caixaDeEntradaOffsetY = 0.dp,
+                caixaDeEntradaSize = 30.dp,
             )
             Spacer(modifier = Modifier.size(20.dp))
             Text(
@@ -100,13 +111,18 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
                 modifier = Modifier.padding(start = 32.dp)
             )
             Spacer(modifier = Modifier.height(5.dp))
-            CaixasDeEntradaTextComponents(
-                    value = sobrenome,
-                    onvalueChange = { "" },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        capitalization = KeyboardCapitalization.Words
-                    ),
+            CaixaDeEntradaComponent(
+                Modifier,
+                value = instrucoes,
+                onvalueChange = { "" },
+                keyboardType = KeyboardType.Text,
+                capitalization = KeyboardCapitalization.Words,
+                caixaDeEntradaWidth = 300.dp,
+                caixaDeEntradaPaddingStart = 0.dp,
+                caixaDeEntradaPaddingTop = 0.dp,
+                caixaDeEntradaOffsetX = 30.dp,
+                caixaDeEntradaOffsetY = 0.dp,
+                caixaDeEntradaSize = 30.dp,
             )
             Spacer(modifier = Modifier.height(20.dp))
             Text(
@@ -117,13 +133,18 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
                 modifier = Modifier.padding(start = 32.dp)
             )
             Spacer(modifier = Modifier.height(5.dp))
-            CaixasDeEntradaTextComponents(
-                value = telefone,
+            CaixaDeEntradaComponent(
+                Modifier,
+                value = instrucoes,
                 onvalueChange = { "" },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Phone,
-                    capitalization = KeyboardCapitalization.Words
-                ),
+                keyboardType = KeyboardType.Text,
+                capitalization = KeyboardCapitalization.Words,
+                caixaDeEntradaWidth = 300.dp,
+                caixaDeEntradaPaddingStart = 0.dp,
+                caixaDeEntradaPaddingTop = 0.dp,
+                caixaDeEntradaOffsetX = 30.dp,
+                caixaDeEntradaOffsetY = 0.dp,
+                caixaDeEntradaSize = 30.dp,
             )
             Spacer(modifier = Modifier.height(20.dp))
             Text(
@@ -134,15 +155,27 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
                 modifier = Modifier.padding(start = 32.dp)
             )
             Spacer(modifier = Modifier.height(5.dp))
-            CaixasDeEntradaTextComponents(
-                value = senha,
+            CaixaDeEntradaComponent(
+                Modifier,
+                value = instrucoes,
                 onvalueChange = { "" },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    capitalization = KeyboardCapitalization.Words
-                ),
+                keyboardType = KeyboardType.Text,
+                capitalization = KeyboardCapitalization.Words,
+                caixaDeEntradaWidth = 300.dp,
+                caixaDeEntradaPaddingStart = 0.dp,
+                caixaDeEntradaPaddingTop = 0.dp,
+                caixaDeEntradaOffsetX = 30.dp,
+                caixaDeEntradaOffsetY = 0.dp,
+                caixaDeEntradaSize = 30.dp,
             )
-            ButtonRegistro()
+            ButtonsComponent(
+                onClick = {},
+                modifier = Modifier,
+                text = stringResource(R.string.text_cadastrar),
+                buttonwidth = 280.dp,
+                buttonOffsetX = 55.dp,
+                buttonOffsetY = 160.dp
+            )
             Text(
                 text = "Já tem uma conta?",
                 fontSize = 15.sp,

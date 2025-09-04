@@ -27,8 +27,9 @@ fun SuperiorCadastroOng(modifier: Modifier = Modifier) {
         modifier = Modifier
             .fillMaxWidth()
             .background(color = colorResource(R.color.white))
-            .height(85.dp),
-        horizontalArrangement = Arrangement.Absolute.Center
+            .height(85.dp)
+            .offset(y = 8.dp),
+        horizontalArrangement = Arrangement.Center
     ) {
         Icon(
             painter = painterResource(R.drawable.seta_esquerda_back_24),
@@ -36,7 +37,7 @@ fun SuperiorCadastroOng(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .size(25.dp)
                 .align(alignment = Alignment.CenterVertically)
-                .offset(y = 8.dp, x = -120.dp),
+                .offset(x = -120.dp),
             tint = colorResource(R.color.cor_registre)
         )
         Text(
@@ -45,8 +46,7 @@ fun SuperiorCadastroOng(modifier: Modifier = Modifier) {
             color = colorResource(R.color.cor_text_login),
             textAlign = TextAlign.Center,
             modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .offset(y = 8.dp),
+                .align(Alignment.CenterVertically),
             fontSize = 17.sp
         )
     }
