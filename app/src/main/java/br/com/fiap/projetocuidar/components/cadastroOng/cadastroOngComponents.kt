@@ -1,6 +1,5 @@
 package br.com.fiap.projetocuidar.components.cadastroOng
 
-import android.widget.Space
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,11 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,8 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,10 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fiap.projetocuidar.R
 import br.com.fiap.projetocuidar.components.ButtonsComponent
-import br.com.fiap.projetocuidar.components.DividerComponent
-import br.com.fiap.projetocuidar.components.TituloComponents
 import br.com.fiap.projetocuidar.components.CaixaDeEntradaComponent
-import org.w3c.dom.Text
+import br.com.fiap.projetocuidar.components.DividerComponent
+import br.com.fiap.projetocuidar.components.TextCadastroOng
+import br.com.fiap.projetocuidar.components.TituloComponents
 
 
 @Composable
@@ -76,6 +71,7 @@ fun CadastroOngComponents(modifier: Modifier = Modifier) {
                 caixaDeEntradaOffsetX = 20.dp,
                 caixaDeEntradaOffsetY = 15.dp,
                 caixaDeEntradaSize = 0.dp,
+                singleLine = false
             )
             Spacer(modifier = Modifier.height(30.dp))
             TextCadastroOng(stringResource(R.string.text_categoria))
@@ -91,6 +87,7 @@ fun CadastroOngComponents(modifier: Modifier = Modifier) {
                 caixaDeEntradaOffsetX = 20.dp,
                 caixaDeEntradaOffsetY = 15.dp,
                 caixaDeEntradaSize = 0.dp,
+                singleLine = false
             )
             Spacer(modifier = Modifier.height(35.dp))
             TextCadastroOng("Sobre")
@@ -106,6 +103,7 @@ fun CadastroOngComponents(modifier: Modifier = Modifier) {
                 caixaDeEntradaOffsetX = 20.dp,
                 caixaDeEntradaOffsetY = 2.dp,
                 caixaDeEntradaSize = 70.dp,
+                singleLine = false
             )
             Spacer(modifier = Modifier.height(10.dp))
             TextCadastroOng("Telefone")
@@ -121,6 +119,7 @@ fun CadastroOngComponents(modifier: Modifier = Modifier) {
                 caixaDeEntradaOffsetX = 20.dp,
                 caixaDeEntradaOffsetY = 15.dp,
                 caixaDeEntradaSize = 0.dp,
+                singleLine = false
             )
             Spacer(modifier = Modifier.height(35.dp))
             TextCadastroOng("Foto (url)")
@@ -135,7 +134,8 @@ fun CadastroOngComponents(modifier: Modifier = Modifier) {
                     caixaDeEntradaPaddingTop = 0.dp,
                     caixaDeEntradaOffsetX = 20.dp,
                     caixaDeEntradaOffsetY = 15.dp,
-                    caixaDeEntradaSize = 0.dp
+                    caixaDeEntradaSize = 0.dp,
+                false
             )
             Spacer(modifier = Modifier.height(30.dp))
             //Intruções e horário sobre a Visitação do orfanato.
@@ -155,6 +155,7 @@ fun CadastroOngComponents(modifier: Modifier = Modifier) {
                 caixaDeEntradaOffsetX = 20.dp,
                 caixaDeEntradaOffsetY = 2.dp,
                 caixaDeEntradaSize = 70.dp,
+                singleLine = false
             )
             Spacer(modifier = Modifier.height(15.dp))
             TextCadastroOng("Horário das visitas")
@@ -170,6 +171,7 @@ fun CadastroOngComponents(modifier: Modifier = Modifier) {
                 caixaDeEntradaOffsetX = 20.dp,
                 caixaDeEntradaOffsetY = 15.dp,
                 caixaDeEntradaSize = 0.dp,
+                singleLine = false
             )
             Spacer(modifier = Modifier.height(30.dp))
             Row(
@@ -193,14 +195,20 @@ fun CadastroOngComponents(modifier: Modifier = Modifier) {
             }
             ButtonsComponent(
                 Modifier,
-                onClick = {/*TODO*/ },
-                text = stringResource(R.string.text_cadastrar),
                 buttonwidth = 200.dp,
                 buttonOffsetX = 100.dp,
-                buttonOffsetY = 10.dp
+                buttonOffsetY = 10.dp,
+                onClick = {/*TODO*/ },
+                text = stringResource(R.string.text_cadastrar),
+                singleLine = true
             )
         }
     }
+}
+
+@Composable
+fun SuperiorCadastroOng() {
+    TODO("Not yet implemented")
 }
 
 @Preview(showBackground = true, showSystemUi = true)

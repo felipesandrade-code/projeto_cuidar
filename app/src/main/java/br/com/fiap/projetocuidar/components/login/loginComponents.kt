@@ -11,6 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -23,14 +27,20 @@ import androidx.navigation.compose.rememberNavController
 import br.com.fiap.projetocuidar.R
 import br.com.fiap.projetocuidar.components.ButtonsComponent
 import br.com.fiap.projetocuidar.components.CaixaDeEntradaComponent
+import br.com.fiap.projetocuidar.components.CaixaDeEntradaSenha
+import br.com.fiap.projetocuidar.components.IconesLogin
 import br.com.fiap.projetocuidar.components.ImgComponent
 import br.com.fiap.projetocuidar.components.LogoComponent
+import br.com.fiap.projetocuidar.components.TextsLogin
 
 
 @Composable
 fun LoginComponents(
     navController: NavController,
 ) {
+    var email by remember { mutableStateOf("") }
+    var senha by remember { mutableStateOf("") }
+
     Box(modifier = Modifier
             .fillMaxSize()
             .fillMaxWidth()
@@ -61,9 +71,9 @@ fun LoginComponents(
                 Spacer(modifier = Modifier.height(5.dp))
                 CaixaDeEntradaComponent(
                     modifier = Modifier,
-                    value = "",
-                    onvalueChange = {},
-                    keyboardType = KeyboardType.Password,
+                    value = email,
+                    onvalueChange = {email = it},
+                    keyboardType = KeyboardType.Email,
                     capitalization = KeyboardCapitalization.None,
                     singleLine = true,
                     caixaDeEntradaWidth = 310.dp,
@@ -71,15 +81,16 @@ fun LoginComponents(
                     caixaDeEntradaPaddingTop = 0.dp,
                     caixaDeEntradaOffsetX = 40.dp,
                     caixaDeEntradaOffsetY = 0.dp,
-                    caixaDeEntradaSize = 30.dp
+                    caixaDeEntradaSize = 56.dp,
+                    isPassword = false
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 TextsLogin(Modifier, stringResource(R.string.text_senha))
                 Spacer(modifier = Modifier.height(5.dp))
-                CaixaDeEntradaComponent(
+                CaixaDeEntradaSenha(
                     modifier = Modifier,
-                    value = "",
-                    onvalueChange = {},
+                    value = senha,
+                    onvalueChange = {senha = it},
                     keyboardType = KeyboardType.Password,
                     capitalization = KeyboardCapitalization.None,
                     singleLine = true,
@@ -88,15 +99,19 @@ fun LoginComponents(
                     caixaDeEntradaPaddingTop = 0.dp,
                     caixaDeEntradaOffsetX = 40.dp,
                     caixaDeEntradaOffsetY = 0.dp,
-                    caixaDeEntradaSize = 30.dp
+                    caixaDeEntradaSize = 56.dp,
+                    isPassword = true
                 )
                 ButtonsComponent(
                     modifier = Modifier,
                     buttonwidth = 280.dp,
                     buttonOffsetX = 55.dp,
                     buttonOffsetY = 20.dp,
-                    onClick = { navController.navigate("register") },
-                    text = stringResource(R.string.text_login)
+                    onClick = {
+                        navController.navigate("home")
+                        },
+                    text = stringResource(R.string.text_login),
+                    singleLine = true
                 )
                 IconesLogin()
             }

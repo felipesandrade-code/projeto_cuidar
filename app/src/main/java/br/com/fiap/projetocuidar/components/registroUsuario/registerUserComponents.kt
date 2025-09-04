@@ -31,6 +31,7 @@ import br.com.fiap.projetocuidar.R
 import br.com.fiap.projetocuidar.components.ButtonsComponent
 import br.com.fiap.projetocuidar.components.CaixaDeEntradaComponent
 import br.com.fiap.projetocuidar.components.DividerComponent
+import br.com.fiap.projetocuidar.components.SuperiorRegister
 import br.com.fiap.projetocuidar.components.TituloComponents
 
 @Composable
@@ -52,6 +53,7 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .offset(y = 110.dp)
+                .padding(15.dp)
         ) {
             TituloComponents(Modifier, "Crie sua conta", 30.sp)
             Spacer(modifier = Modifier.height(10.dp))
@@ -171,21 +173,23 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
                 caixaDeEntradaSize = 30.dp,
                 singleLine = false
             )
-            ButtonsComponent(
-                onClick = {},
-                modifier = Modifier,
-                text = stringResource(R.string.text_cadastrar),
-                buttonwidth = 280.dp,
-                buttonOffsetX = 55.dp,
-                buttonOffsetY = 160.dp
-            )
+            Spacer(modifier = Modifier.height(20.dp))
             Text(
                 text = "Já tem uma conta?",
                 fontSize = 15.sp,
                 color = colorResource(R.color.cor_registre),
                 fontFamily = FontFamily(Font(R.font.poppins_regular)),
                 textDecoration = TextDecoration.Underline,
-                modifier = Modifier.offset(x = 15.dp, y = -28.dp)
+                modifier = Modifier.offset(x = 15.dp)
+            )
+            ButtonsComponent(
+                modifier = Modifier,
+                buttonwidth = 280.dp,
+                buttonOffsetX = 45.dp,
+                buttonOffsetY = 130.dp,
+                onClick = {},
+                text = stringResource(R.string.text_cadastrar),
+                singleLine = true
             )
         }
     }

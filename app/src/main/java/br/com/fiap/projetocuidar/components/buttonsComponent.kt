@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import br.com.fiap.projetocuidar.R
 
 
@@ -21,6 +20,7 @@ fun ButtonsComponent(
     buttonOffsetY: Dp,
     onClick: () -> Unit,
     text: String,
+    singleLine: Boolean = true
 ) {
     Button(
         onClick = { onClick() },
@@ -30,6 +30,9 @@ fun ButtonsComponent(
         shape = Shapes().small,
         colors = ButtonDefaults.buttonColors(colorResource(R.color.cor_card_footer)),
     ){
-        TextButtons(text = text)
+        TextButtons(
+            text = text,
+            singleLine = singleLine
+        )
     }
 }

@@ -13,7 +13,8 @@ import br.com.fiap.projetocuidar.R
 
 @Composable
 fun TextButtons(
-    text: String
+    text: String,
+    singleLine: Boolean
 ) {
     Text(
         text = text,

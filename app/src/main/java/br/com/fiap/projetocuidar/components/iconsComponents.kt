@@ -1,4 +1,4 @@
-package br.com.fiap.projetocuidar.components.login
+package br.com.fiap.projetocuidar.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

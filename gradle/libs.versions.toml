@@ -13,6 +13,7 @@ navigation = "2.9.3"
 navigationanimation ="2.8.0"
 playServicesMaps = "19.2.0"
 ui = "1.9.0"
+animationCoreLint = "1.9.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,6 +35,7 @@ maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = 
 navigation-compose = {module = "androidx.navigation:navigation-compose", version.ref = "navigation"}
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
+androidx-animation-core-lint = { group = "androidx.compose.animation", name = "animation-core-lint", version.ref = "animationCoreLint" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
