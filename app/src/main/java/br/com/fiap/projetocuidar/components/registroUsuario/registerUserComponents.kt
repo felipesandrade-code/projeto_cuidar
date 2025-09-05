@@ -1,6 +1,7 @@
 package br.com.fiap.projetocuidar.components.registroUsuario
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -27,20 +29,36 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import br.com.fiap.projetocuidar.R
+import br.com.fiap.projetocuidar.ValidateEmail
 import br.com.fiap.projetocuidar.components.ButtonsComponent
 import br.com.fiap.projetocuidar.components.CaixaDeEntradaComponent
 import br.com.fiap.projetocuidar.components.DividerComponent
 import br.com.fiap.projetocuidar.components.SuperiorRegister
+import br.com.fiap.projetocuidar.components.TextClickable
+import br.com.fiap.projetocuidar.components.TextsLogin
 import br.com.fiap.projetocuidar.components.TituloComponents
+import br.com.fiap.projetocuidar.validateSenha
 
 @Composable
-fun RegisterComponents(modifier: Modifier = Modifier) {
+fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavController) {
     var senha by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var nome by remember { mutableStateOf("") }
     var sobrenome by remember { mutableStateOf("") }
     var telefone by remember { mutableStateOf("") }
+
+    var emailErrorMessage by remember { mutableStateOf<String?>(null) }
+    var nomeErrorMessage by remember { mutableStateOf<String?>(null) }
+    var sobrenomeErrorMessage by remember { mutableStateOf<String?>(null) }
+    var telefoneErrorMessage by remember { mutableStateOf<String?>(null) }
+    var senhaErrorMessage by remember { mutableStateOf<String?>(null) }
+
+    val validarEmail = ValidateEmail(email)
+    val validarSenha = validateSenha(senha)
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -48,17 +66,17 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
             .background(color = colorResource(R.color.cor_column_registre))
     )
     {
-        SuperiorRegister(Modifier, stringResource(R.string.text_login))
+        SuperiorRegister(Modifier,stringResource(R.string.text_login), navcontroller)
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .offset(y = 110.dp)
+                .offset(y = 85.dp)
                 .padding(15.dp)
         ) {
             TituloComponents(Modifier, "Crie sua conta", 30.sp)
-            Spacer(modifier = Modifier.height(10.dp))
             DividerComponent()
-            Spacer(modifier = Modifier.height(20.dp))
+
+            Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = stringResource(R.string.text_email),
                 fontSize = 15.sp,
@@ -70,7 +88,7 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
             CaixaDeEntradaComponent(
                 Modifier,
                 value = email,
-                onvalueChange = { "" },
+                onvalueChange = { email = it },
                 keyboardType = KeyboardType.Email,
                 capitalization = KeyboardCapitalization.Words,
                 caixaDeEntradaWidth = 300.dp,
@@ -78,10 +96,21 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
                 caixaDeEntradaPaddingTop = 0.dp,
                 caixaDeEntradaOffsetX = 30.dp,
                 caixaDeEntradaOffsetY = 0.dp,
-                caixaDeEntradaSize = 30.dp,
-                singleLine = false,
+                caixaDeEntradaSize = 46.dp,
+                singleLine = true,
+                isError = false
             )
+            emailErrorMessage?.let { msg ->
+                Text(
+                    text = "Digite um e-mail válido",
+                    color = Color.Red,
+                    fontSize = 11.sp,
+                    modifier = Modifier.offset(x = 30.dp)
+                )
+            }
+
             Spacer(modifier = Modifier.height(10.dp))
+
             Text(
                 stringResource(R.string.text_name),
                 fontSize = 15.sp,
@@ -93,7 +122,7 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
             CaixaDeEntradaComponent(
                 Modifier,
                 value = nome,
-                onvalueChange = { "" },
+                onvalueChange = { nome = it },
                 keyboardType = KeyboardType.Text,
                 capitalization = KeyboardCapitalization.Words,
                 caixaDeEntradaWidth = 300.dp,
@@ -101,10 +130,21 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
                 caixaDeEntradaPaddingTop = 0.dp,
                 caixaDeEntradaOffsetX = 30.dp,
                 caixaDeEntradaOffsetY = 0.dp,
-                caixaDeEntradaSize = 30.dp,
-                singleLine = false
+                caixaDeEntradaSize = 46.dp,
+                singleLine = true,
+                isError = false
             )
-            Spacer(modifier = Modifier.size(20.dp))
+            nomeErrorMessage?.let {
+                Text(
+                    "Campo Nome vazio, por favor digite um nome",
+                    color = Color.Red,
+                    fontSize = 11.sp,
+                    modifier = Modifier.offset(x = 30.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.size(10.dp))
+
             Text(
                 stringResource(R.string.text_surname),
                 fontSize = 15.sp,
@@ -116,7 +156,7 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
             CaixaDeEntradaComponent(
                 Modifier,
                 value = sobrenome,
-                onvalueChange = { "" },
+                onvalueChange = { sobrenome = it},
                 keyboardType = KeyboardType.Text,
                 capitalization = KeyboardCapitalization.Words,
                 caixaDeEntradaWidth = 300.dp,
@@ -124,10 +164,21 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
                 caixaDeEntradaPaddingTop = 0.dp,
                 caixaDeEntradaOffsetX = 30.dp,
                 caixaDeEntradaOffsetY = 0.dp,
-                caixaDeEntradaSize = 30.dp,
-                singleLine = false
+                caixaDeEntradaSize = 46.dp,
+                singleLine = true,
+                isError = false
             )
-            Spacer(modifier = Modifier.height(20.dp))
+            sobrenomeErrorMessage?.let {
+                Text(
+                    "Campo sobrenome está vazio, por favor digite o seu sobrenome.",
+                    color = Color.Red,
+                    fontSize = 11.sp,
+                    modifier = Modifier.offset(30.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
             Text(
                 stringResource(R.string.text_telefone),
                 fontSize = 15.sp,
@@ -139,7 +190,7 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
             CaixaDeEntradaComponent(
                 Modifier,
                 value = telefone,
-                onvalueChange = { "" },
+                onvalueChange = { telefone = it },
                 keyboardType = KeyboardType.Number,
                 capitalization = KeyboardCapitalization.Unspecified,
                 caixaDeEntradaWidth = 300.dp,
@@ -147,10 +198,22 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
                 caixaDeEntradaPaddingTop = 0.dp,
                 caixaDeEntradaOffsetX = 30.dp,
                 caixaDeEntradaOffsetY = 0.dp,
-                caixaDeEntradaSize = 30.dp,
-                singleLine = false
+                caixaDeEntradaSize = 46.dp,
+                singleLine = true,
+                isError = false
             )
-            Spacer(modifier = Modifier.height(20.dp))
+            telefoneErrorMessage?.let {
+                Text(
+                    "Campo telefone vazio, por favor digite um telefone",
+                    color = Color.Red,
+                    fontSize = 11.sp,
+                    modifier = Modifier.offset(x = 30.dp)
+
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
             Text(
                 text = stringResource(R.string.text_senha),
                 fontSize = 15.sp,
@@ -162,7 +225,7 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
             CaixaDeEntradaComponent(
                 Modifier,
                 value = senha,
-                onvalueChange = { "" },
+                onvalueChange = { senha = it },
                 keyboardType = KeyboardType.Password,
                 capitalization = KeyboardCapitalization.None,
                 caixaDeEntradaWidth = 300.dp,
@@ -170,24 +233,43 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
                 caixaDeEntradaPaddingTop = 0.dp,
                 caixaDeEntradaOffsetX = 30.dp,
                 caixaDeEntradaOffsetY = 0.dp,
-                caixaDeEntradaSize = 30.dp,
-                singleLine = false
+                caixaDeEntradaSize = 46.dp,
+                singleLine = true,
+                isError = false
             )
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(
+            senhaErrorMessage?.let { msg ->
+                Text(
+                    text = "senha inválida, digite novamente.",
+                    color = Color.Red,
+                    fontSize = 11.sp,
+                    modifier = Modifier.offset(x = 30.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            TextClickable(
                 text = "Já tem uma conta?",
-                fontSize = 15.sp,
-                color = colorResource(R.color.cor_registre),
-                fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                textDecoration = TextDecoration.Underline,
-                modifier = Modifier.offset(x = 15.dp)
+                navcontroller = navcontroller,
+                route = "login",
+                fontSize = 14.sp,
+                offsetX = 40.dp,
+                offsetY = 0.dp
             )
             ButtonsComponent(
                 modifier = Modifier,
                 buttonwidth = 280.dp,
                 buttonOffsetX = 45.dp,
-                buttonOffsetY = 130.dp,
-                onClick = {},
+                buttonOffsetY = 30.dp,
+                onClick = {
+                    sobrenomeErrorMessage = if(sobrenome.isBlank()) "Digite um sobrenome por favor " else null
+                    nomeErrorMessage = if(nome.isBlank()) "Digite um nome por favor " else null
+                    telefoneErrorMessage = if(telefone.isBlank()) "Digite um telefone por favor " else null
+                    emailErrorMessage = if(email.isBlank()) "Digite um e-mail por favor " else validarEmail
+                    senhaErrorMessage = if(senha.isBlank()) "Digite uma senha por favor " else validarSenha
+
+                    if(listOf(nomeErrorMessage, emailErrorMessage, senhaErrorMessage, sobrenomeErrorMessage, telefoneErrorMessage).all { it == null })
+                    navcontroller.navigate("login"){
+                    }
+                },
                 text = stringResource(R.string.text_cadastrar),
                 singleLine = true
             )
@@ -198,5 +280,5 @@ fun RegisterComponents(modifier: Modifier = Modifier) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun ColumnRegisterPreview() {
-    RegisterComponents()
+    RegisterComponents(navcontroller = rememberNavController())
 }

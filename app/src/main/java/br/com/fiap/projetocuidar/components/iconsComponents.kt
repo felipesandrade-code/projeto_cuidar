@@ -26,7 +26,7 @@ fun IconesLogin(modifier: Modifier = Modifier) {
             contentDescription = "Logo Facebook",
             tint = colorResource(R.color.cor_registre),
             modifier = Modifier
-                .offset(y = 50.dp)
+                .offset(y = 70.dp)
                 .size(30.dp)
         )
         Spacer(modifier = Modifier.width(35.dp))
@@ -36,7 +36,7 @@ fun IconesLogin(modifier: Modifier = Modifier) {
             tint = colorResource(R.color.cor_registre),
             modifier = Modifier
                 .size(30.dp)
-                .offset(y = 50.dp)
+                .offset(y = 70.dp)
         )
     }
 }

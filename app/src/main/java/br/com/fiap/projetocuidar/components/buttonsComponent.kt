@@ -23,7 +23,7 @@ fun ButtonsComponent(
     singleLine: Boolean = true
 ) {
     Button(
-        onClick = { onClick() },
+        onClick = onClick,
         modifier = Modifier
             .width(buttonwidth)
             .offset(x = buttonOffsetX, y = buttonOffsetY),

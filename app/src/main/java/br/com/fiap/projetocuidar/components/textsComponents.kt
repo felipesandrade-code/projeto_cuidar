@@ -1,5 +1,6 @@
 package br.com.fiap.projetocuidar.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -10,10 +11,12 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import br.com.fiap.projetocuidar.R
 
 @Composable
@@ -95,5 +98,29 @@ fun TextCadastroOng(
         color = colorResource(R.color.cor_text_login),
         fontFamily = FontFamily(Font(R.font.nunito_semibold)),
         modifier = Modifier.padding(start = 32.dp, bottom = 2.dp)
+    )
+}
+
+@Composable
+fun TextClickable(
+    modifier: Modifier = Modifier,
+    text: String,
+    navcontroller: NavController,
+    route: String,
+    fontSize: TextUnit,
+    offsetX: Dp,
+    offsetY: Dp
+) {
+    Text(
+        text = text,
+        fontSize = fontSize,
+        color = colorResource(R.color.cor_registre),
+        fontFamily = FontFamily(Font(R.font.poppins_regular)),
+        textDecoration = TextDecoration.Underline,
+        modifier = Modifier
+            .offset(x = offsetX, y = offsetY)
+            .clickable(
+                onClick = {navcontroller.navigate(route)}
+            )
     )
 }

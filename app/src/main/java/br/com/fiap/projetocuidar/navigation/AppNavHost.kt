@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 
 import br.com.fiap.projetocuidar.Screens.HomeScreen
 import br.com.fiap.projetocuidar.Screens.LoginScreen
+import br.com.fiap.projetocuidar.Screens.RegistroUsuarioScreen
 
 @Composable
 fun AppNavHost(playServicesOk: Boolean) {
@@ -14,5 +15,6 @@ fun AppNavHost(playServicesOk: Boolean) {
     NavHost(navController = nav, startDestination = "login") {
         composable("login") { LoginScreen(nav) }
         composable("home")  { HomeScreen(playServicesOk = playServicesOk) }
+        composable("registro"){ RegistroUsuarioScreen(nav) }
     }
 }

@@ -23,4 +23,6 @@
     <color name="text_fim_de_semana">#37C77F</color>
     <color name="text_horario_orfanato">#6F98AA</color>
     <color name="true_atende_final_de_semana">#FF4CAF50</color>
+    <color name="color_erro_email">#FA0000</color>
+
 </resources>
