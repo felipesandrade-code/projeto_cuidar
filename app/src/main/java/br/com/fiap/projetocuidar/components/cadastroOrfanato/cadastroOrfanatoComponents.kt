@@ -1,4 +1,4 @@
-package br.com.fiap.projetocuidar.components.cadastroOng
+package br.com.fiap.projetocuidar.components.cadastroOrfanato
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

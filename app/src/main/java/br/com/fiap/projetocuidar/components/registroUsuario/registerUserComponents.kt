@@ -38,6 +38,7 @@ import br.com.fiap.projetocuidar.components.CaixaDeEntradaComponent
 import br.com.fiap.projetocuidar.components.DividerComponent
 import br.com.fiap.projetocuidar.components.SuperiorRegister
 import br.com.fiap.projetocuidar.components.TextClickable
+import br.com.fiap.projetocuidar.components.TextRegisterUsuario
 import br.com.fiap.projetocuidar.components.TextsLogin
 import br.com.fiap.projetocuidar.components.TituloComponents
 import br.com.fiap.projetocuidar.validateSenha
@@ -70,20 +71,14 @@ fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavControll
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .offset(y = 85.dp)
+                .offset(y = 75.dp)
                 .padding(15.dp)
         ) {
             TituloComponents(Modifier, "Crie sua conta", 30.sp)
             DividerComponent()
 
             Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                text = stringResource(R.string.text_email),
-                fontSize = 15.sp,
-                color = colorResource(R.color.cor_text_login),
-                fontFamily = FontFamily(Font(R.font.nunito_semibold)),
-                modifier = Modifier.padding(start = 32.dp)
-            )
+            TextRegisterUsuario(stringResource(R.string.text_email))
             Spacer(modifier = Modifier.height(5.dp))
             CaixaDeEntradaComponent(
                 Modifier,
@@ -108,16 +103,37 @@ fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavControll
                     modifier = Modifier.offset(x = 30.dp)
                 )
             }
+            Spacer(modifier = Modifier.height(10.dp))
+
+            TextRegisterUsuario(stringResource(R.string.text_senha))
+            Spacer(modifier = Modifier.height(5.dp))
+            CaixaDeEntradaComponent(
+                Modifier,
+                value = senha,
+                onvalueChange = { senha = it },
+                keyboardType = KeyboardType.Password,
+                capitalization = KeyboardCapitalization.None,
+                caixaDeEntradaWidth = 300.dp,
+                caixaDeEntradaPaddingStart = 0.dp,
+                caixaDeEntradaPaddingTop = 0.dp,
+                caixaDeEntradaOffsetX = 30.dp,
+                caixaDeEntradaOffsetY = 0.dp,
+                caixaDeEntradaSize = 46.dp,
+                singleLine = true,
+                isError = false
+            )
+            senhaErrorMessage?.let { msg ->
+                Text(
+                    text = "senha inválida, digite novamente.",
+                    color = Color.Red,
+                    fontSize = 11.sp,
+                    modifier = Modifier.offset(x = 30.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            Text(
-                stringResource(R.string.text_name),
-                fontSize = 15.sp,
-                color = colorResource(R.color.cor_text_login),
-                fontFamily = FontFamily(Font(R.font.nunito_semibold)),
-                modifier = Modifier.padding(start = 32.dp)
-            )
+            TextRegisterUsuario(stringResource(R.string.text_name))
             Spacer(modifier = Modifier.height(5.dp))
             CaixaDeEntradaComponent(
                 Modifier,
@@ -145,13 +161,7 @@ fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavControll
 
             Spacer(modifier = Modifier.size(10.dp))
 
-            Text(
-                stringResource(R.string.text_surname),
-                fontSize = 15.sp,
-                color = colorResource(R.color.cor_text_login),
-                fontFamily = FontFamily(Font(R.font.nunito_semibold)),
-                modifier = Modifier.padding(start = 32.dp)
-            )
+            TextRegisterUsuario(stringResource(R.string.text_surname))
             Spacer(modifier = Modifier.height(5.dp))
             CaixaDeEntradaComponent(
                 Modifier,
@@ -179,13 +189,7 @@ fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavControll
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            Text(
-                stringResource(R.string.text_telefone),
-                fontSize = 15.sp,
-                color = colorResource(R.color.cor_text_login),
-                fontFamily = FontFamily(Font(R.font.nunito_semibold)),
-                modifier = Modifier.padding(start = 32.dp)
-            )
+            TextRegisterUsuario(stringResource(R.string.text_telefone))
             Spacer(modifier = Modifier.height(5.dp))
             CaixaDeEntradaComponent(
                 Modifier,
@@ -214,37 +218,6 @@ fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavControll
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            Text(
-                text = stringResource(R.string.text_senha),
-                fontSize = 15.sp,
-                color = colorResource(R.color.cor_text_login),
-                fontFamily = FontFamily(Font(R.font.nunito_semibold)),
-                modifier = Modifier.padding(start = 32.dp)
-            )
-            Spacer(modifier = Modifier.height(5.dp))
-            CaixaDeEntradaComponent(
-                Modifier,
-                value = senha,
-                onvalueChange = { senha = it },
-                keyboardType = KeyboardType.Password,
-                capitalization = KeyboardCapitalization.None,
-                caixaDeEntradaWidth = 300.dp,
-                caixaDeEntradaPaddingStart = 0.dp,
-                caixaDeEntradaPaddingTop = 0.dp,
-                caixaDeEntradaOffsetX = 30.dp,
-                caixaDeEntradaOffsetY = 0.dp,
-                caixaDeEntradaSize = 46.dp,
-                singleLine = true,
-                isError = false
-            )
-            senhaErrorMessage?.let { msg ->
-                Text(
-                    text = "senha inválida, digite novamente.",
-                    color = Color.Red,
-                    fontSize = 11.sp,
-                    modifier = Modifier.offset(x = 30.dp)
-                )
-            }
             Spacer(modifier = Modifier.height(8.dp))
             TextClickable(
                 text = "Já tem uma conta?",
@@ -258,7 +231,7 @@ fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavControll
                 modifier = Modifier,
                 buttonwidth = 280.dp,
                 buttonOffsetX = 45.dp,
-                buttonOffsetY = 30.dp,
+                buttonOffsetY = 20.dp,
                 onClick = {
                     sobrenomeErrorMessage = if(sobrenome.isBlank()) "Digite um sobrenome por favor " else null
                     nomeErrorMessage = if(nome.isBlank()) "Digite um nome por favor " else null

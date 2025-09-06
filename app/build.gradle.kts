@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.accompanist.navigation.animation)
     implementation(libs.ui)
     implementation(libs.androidx.animation.core.lint)
+    implementation(libs.androidx.foundation.layout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

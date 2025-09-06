@@ -55,11 +55,11 @@ fun SuperiorCadastroOng(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SuperiorOngComponent(modifier: Modifier = Modifier) {
+fun SuperiorOngComponent(modifier: Modifier, navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(70.dp)
+            .height(80.dp)
             .background(color = colorResource(R.color.white)),
         horizontalArrangement = Arrangement.Absolute.Center
     ) {
@@ -69,7 +69,8 @@ fun SuperiorOngComponent(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .size(25.dp)
                 .align(alignment = Alignment.CenterVertically)
-                .offset(y = 8.dp, x = -120.dp),
+                .offset(y = 9.dp, x = -120.dp)
+                .clickable(onClick = { navController.navigate("home") }),
             tint = colorResource(R.color.cor_registre)
         )
         Text(
@@ -79,7 +80,7 @@ fun SuperiorOngComponent(modifier: Modifier = Modifier) {
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .offset(y = 8.dp),
+                .offset(y = 9.dp),
             fontSize = 17.sp
         )
     }
@@ -105,7 +106,7 @@ fun SuperiorRegister(
                 .size(25.dp)
                 .align(alignment = Alignment.CenterVertically)
                 .offset(x = -130.dp, y = 13.dp)
-                .clickable(onClick = {navcontroller.navigate("login")}),
+                .clickable(onClick = { navcontroller.navigate("login") }),
             tint = colorResource(R.color.cor_registre)
         )
         Text(
@@ -113,7 +114,38 @@ fun SuperiorRegister(
             fontFamily = FontFamily(Font(R.font.nunito_regular)),
             color = colorResource(R.color.cor_text_login),
             modifier = Modifier
-                .align( Alignment.CenterVertically)
+                .align(Alignment.CenterVertically)
+                .offset(y = 10.dp, x = -10.dp),
+            fontSize = 17.sp
+        )
+    }
+}
+
+@Composable
+fun SuperiorMapa(navcontroller: NavController) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(85.dp)
+            .background(color = colorResource(R.color.white)),
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.seta_esquerda_back_24),
+            contentDescription = "Seta para esquerda",
+            modifier = Modifier
+                .size(25.dp)
+                .align(alignment = Alignment.CenterVertically)
+                .offset(x = -130.dp, y = 13.dp)
+                .clickable(onClick = { navcontroller.navigate("home") }),
+            tint = colorResource(R.color.cor_registre)
+        )
+        Text(
+            text = "Mapa",
+            fontFamily = FontFamily(Font(R.font.nunito_regular)),
+            color = colorResource(R.color.cor_text_login),
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
                 .offset(y = 10.dp, x = -10.dp),
             fontSize = 17.sp
         )
