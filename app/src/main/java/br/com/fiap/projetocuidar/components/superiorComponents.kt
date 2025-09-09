@@ -24,7 +24,11 @@ import androidx.navigation.NavController
 import br.com.fiap.projetocuidar.R
 
 @Composable
-fun SuperiorCadastroOng(modifier: Modifier = Modifier) {
+fun SuperiorCadastroOng(
+    modifier: Modifier = Modifier,
+    text: String,
+    navcontroller: NavController
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -39,8 +43,10 @@ fun SuperiorCadastroOng(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .size(25.dp)
                 .align(alignment = Alignment.CenterVertically)
-                .offset(x = -120.dp),
-            tint = colorResource(R.color.cor_registre)
+                .offset(x = -130.dp, y = 13.dp)
+                .clickable(onClick = { navcontroller.navigate("mapa") }),
+            tint = colorResource(R.color.cor_registre),
+
         )
         Text(
             text = "Orfanato",
@@ -55,7 +61,11 @@ fun SuperiorCadastroOng(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SuperiorOngComponent(modifier: Modifier, navController: NavController) {
+fun SuperiorOngComponent(
+    modifier: Modifier = Modifier,
+    text: String,
+    navcontroller: NavController
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -69,8 +79,8 @@ fun SuperiorOngComponent(modifier: Modifier, navController: NavController) {
             modifier = Modifier
                 .size(25.dp)
                 .align(alignment = Alignment.CenterVertically)
-                .offset(y = 9.dp, x = -120.dp)
-                .clickable(onClick = { navController.navigate("home") }),
+                .offset(x = -130.dp, y = 13.dp)
+                .clickable(onClick = { navcontroller.navigate("mapa") }),
             tint = colorResource(R.color.cor_registre)
         )
         Text(

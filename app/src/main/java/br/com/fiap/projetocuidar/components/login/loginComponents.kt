@@ -23,11 +23,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import br.com.fiap.projetocuidar.R
 import br.com.fiap.projetocuidar.ValidateEmail
 import br.com.fiap.projetocuidar.components.ButtonsComponent
@@ -148,7 +146,7 @@ fun LoginComponents(
                         emailErrorMessage = emailErrorValidate
                         senhaErrorMessage = senhaErrorValidate
                         if (emailErrorValidate == null && senhaErrorValidate == null) {
-                            navController.navigate("home")
+                            navController.navigate("mapa")
                         }
                     },
                     text = stringResource(R.string.text_login),
