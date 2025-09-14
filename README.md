@@ -25,13 +25,11 @@ A ideia central é utilizar a tecnologia para **gerar impacto social positivo**,
 |------------------------------------------------------|---------------------------------|--------------------------------------------|
 | ![Tela Inicial](tela_inicial.png) | ![Mapa](tela_mapa.png) | ![Detalhes](detalhes_orfanato.png) |
 
-*(Substitua os links pelas imagens hospedadas no repositório ou em outro lugar)*
 
 ---
 
 ## 🎥 Demonstração em Vídeo
-👉 [Assista à demonstração do aplicativo](link-do-video)
-
+👉 [Assista à demonstração do aplicativo](https://youtu.be/a2Q3wpxARuQ)
 ---
 
 ## 📂 Como Executar o Projeto
