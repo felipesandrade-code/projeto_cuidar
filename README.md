@@ -23,7 +23,7 @@ A ideia central é utilizar a tecnologia para **gerar impacto social positivo**,
 ## 📷 Prints do Aplicativo
 | Tela Inicial                                         | Mapa com Orfanatos              | Detalhes do Orfanato                       |
 |------------------------------------------------------|---------------------------------|--------------------------------------------|
-| ![Tela Inicial](https://raw.githubusercontent.com/felipesandrade-code/projeto_cuidar/refs/heads/main/tela_inicial.png?token=GHSAT0AAAAAADH7MI7MJSOCR4ZK255WBL2E2GG6GTQ) | ![Mapa](https://raw.githubusercontent.com/felipesandrade-code/projeto_cuidar/refs/heads/main/tela_mapa.png?token=GHSAT0AAAAAADH7MI7NZ52VVYCVRHZM22YO2GG6HNQ)) | ![Detalhes](https://raw.githubusercontent.com/felipesandrade-code/projeto_cuidar/refs/heads/main/detalhes_orfanato.png?token=GHSAT0AAAAAADH7MI7NNGD3RML6XEFDFV3O2GG6HYQ) |
+| ![Tela Inicial](tela_inicial.png) | ![Mapa](tela_mapa.png) | ![Detalhes](detalhes_orfanato.png) |
 
 *(Substitua os links pelas imagens hospedadas no repositório ou em outro lugar)*
 
