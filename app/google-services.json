@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "672216957931",
+    "project_id": "cuidar-54619",
+    "storage_bucket": "cuidar-54619.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:672216957931:android:9f2556fdaebed19cba4fae",
+        "android_client_info": {
+          "package_name": "br.com.fiap.projetocuidar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDw0gK-CShI8oqGpAaNUc13It4a5xxSKY4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

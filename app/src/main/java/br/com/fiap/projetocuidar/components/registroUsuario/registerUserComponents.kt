@@ -36,10 +36,14 @@ import br.com.fiap.projetocuidar.components.SuperiorRegister
 import br.com.fiap.projetocuidar.components.TextClickable
 import br.com.fiap.projetocuidar.components.TextRegisterUsuario
 import br.com.fiap.projetocuidar.components.TituloComponents
+import br.com.fiap.projetocuidar.data.AuthViewModel
+import br.com.fiap.projetocuidar.data.User
+import br.com.fiap.projetocuidar.util.TelefoneVisualTransformation
 import br.com.fiap.projetocuidar.validateSenha
+import br.com.fiap.projetocuidar.validateTelefone
 
 @Composable
-fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavController) {
+fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavController, authViewModel: AuthViewModel) {
     var senha by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var nome by remember { mutableStateOf("") }
@@ -51,9 +55,11 @@ fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavControll
     var sobrenomeErrorMessage by remember { mutableStateOf<String?>(null) }
     var telefoneErrorMessage by remember { mutableStateOf<String?>(null) }
     var senhaErrorMessage by remember { mutableStateOf<String?>(null) }
+    var registrationErrorMessage by remember { mutableStateOf<String?>(null) }
 
     val validarEmail = ValidateEmail(email)
     val validarSenha = validateSenha(senha)
+    val validarTelefone = validateTelefone(telefone)
 
     Box(
         modifier = Modifier
@@ -72,6 +78,15 @@ fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavControll
             TituloComponents(Modifier, "Crie sua conta", 30.sp)
             DividerComponent()
 
+            registrationErrorMessage?.let { msg ->
+                Text(
+                    text = msg,
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
+
             Spacer(modifier = Modifier.height(10.dp))
             TextRegisterUsuario(stringResource(R.string.text_email))
             Spacer(modifier = Modifier.height(5.dp))
@@ -80,7 +95,7 @@ fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavControll
                 value = email,
                 onvalueChange = { email = it },
                 keyboardType = KeyboardType.Email,
-                capitalization = KeyboardCapitalization.Words,
+                capitalization = KeyboardCapitalization.None,
                 caixaDeEntradaWidth = 300.dp,
                 caixaDeEntradaPaddingStart = 0.dp,
                 caixaDeEntradaPaddingTop = 0.dp,
@@ -88,11 +103,11 @@ fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavControll
                 caixaDeEntradaOffsetY = 0.dp,
                 caixaDeEntradaSize = 46.dp,
                 singleLine = true,
-                isError = false
+                isError = emailErrorMessage != null
             )
             emailErrorMessage?.let { msg ->
                 Text(
-                    text = "Digite um e-mail válido",
+                    text = msg,
                     color = Color.Red,
                     fontSize = 11.sp,
                     modifier = Modifier.offset(x = 30.dp)
@@ -115,11 +130,11 @@ fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavControll
                 caixaDeEntradaOffsetY = 0.dp,
                 caixaDeEntradaSize = 46.dp,
                 singleLine = true,
-                isError = false
+                isError = senhaErrorMessage != null
             )
             senhaErrorMessage?.let { msg ->
                 Text(
-                    text = "senha inválida, digite novamente.",
+                    text = msg,
                     color = Color.Red,
                     fontSize = 11.sp,
                     modifier = Modifier.offset(x = 30.dp)
@@ -143,11 +158,11 @@ fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavControll
                 caixaDeEntradaOffsetY = 0.dp,
                 caixaDeEntradaSize = 46.dp,
                 singleLine = true,
-                isError = false
+                isError = nomeErrorMessage != null
             )
-            nomeErrorMessage?.let {
+            nomeErrorMessage?.let { msg ->
                 Text(
-                    "Campo Nome vazio, por favor digite um nome",
+                    msg,
                     color = Color.Red,
                     fontSize = 11.sp,
                     modifier = Modifier.offset(x = 30.dp)
@@ -171,11 +186,11 @@ fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavControll
                 caixaDeEntradaOffsetY = 0.dp,
                 caixaDeEntradaSize = 46.dp,
                 singleLine = true,
-                isError = false
+                isError = sobrenomeErrorMessage != null
             )
-            sobrenomeErrorMessage?.let {
+            sobrenomeErrorMessage?.let { msg ->
                 Text(
-                    "Campo sobrenome está vazio, por favor digite o seu sobrenome.",
+                    msg,
                     color = Color.Red,
                     fontSize = 11.sp,
                     modifier = Modifier.offset(30.dp)
@@ -189,9 +204,13 @@ fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavControll
             CaixaDeEntradaComponent(
                 Modifier,
                 value = telefone,
-                onvalueChange = { telefone = it },
+                onvalueChange = { 
+                    if (it.all { char -> char.isDigit() } && it.length <= 11) {
+                        telefone = it 
+                    }
+                },
                 keyboardType = KeyboardType.Number,
-                capitalization = KeyboardCapitalization.Unspecified,
+                capitalization = KeyboardCapitalization.None,
                 caixaDeEntradaWidth = 300.dp,
                 caixaDeEntradaPaddingStart = 0.dp,
                 caixaDeEntradaPaddingTop = 0.dp,
@@ -199,11 +218,12 @@ fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavControll
                 caixaDeEntradaOffsetY = 0.dp,
                 caixaDeEntradaSize = 46.dp,
                 singleLine = true,
-                isError = false
+                isError = telefoneErrorMessage != null,
+                visualTransformation = TelefoneVisualTransformation()
             )
-            telefoneErrorMessage?.let {
+            telefoneErrorMessage?.let { msg ->
                 Text(
-                    "Campo telefone vazio, por favor digite um telefone",
+                    msg,
                     color = Color.Red,
                     fontSize = 11.sp,
                     modifier = Modifier.offset(x = 30.dp)
@@ -230,12 +250,19 @@ fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavControll
                 onClick = {
                     sobrenomeErrorMessage = if(sobrenome.isBlank()) "Digite um sobrenome por favor " else null
                     nomeErrorMessage = if(nome.isBlank()) "Digite um nome por favor " else null
-                    telefoneErrorMessage = if(telefone.isBlank()) "Digite um telefone por favor " else null
+                    telefoneErrorMessage = validarTelefone
                     emailErrorMessage = if(email.isBlank()) "Digite um e-mail por favor " else validarEmail
-                    senhaErrorMessage = if(senha.isBlank()) "Digite uma senha por favor " else validarSenha
+                    senhaErrorMessage = validarSenha
 
-                    if(listOf(nomeErrorMessage, emailErrorMessage, senhaErrorMessage, sobrenomeErrorMessage, telefoneErrorMessage).all { it == null })
-                    navcontroller.navigate("login"){
+                    if(listOf(nomeErrorMessage, emailErrorMessage, senhaErrorMessage, sobrenomeErrorMessage, telefoneErrorMessage).all { it == null }) {
+                        val success = authViewModel.register(
+                            User(email, senha, nome, sobrenome, telefone)
+                        )
+                        if (success) {
+                            navcontroller.navigate("login")
+                        } else {
+                            registrationErrorMessage = "Este e-mail já está cadastrado."
+                        }
                     }
                 },
                 text = stringResource(R.string.text_cadastrar),
@@ -248,5 +275,5 @@ fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavControll
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun ColumnRegisterPreview() {
-    RegisterComponents(navcontroller = rememberNavController())
+    RegisterComponents(navcontroller = rememberNavController(), authViewModel = AuthViewModel())
 }

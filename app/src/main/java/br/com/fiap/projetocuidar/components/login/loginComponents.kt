@@ -36,20 +36,24 @@ import br.com.fiap.projetocuidar.components.ImgComponent
 import br.com.fiap.projetocuidar.components.LogoComponent
 import br.com.fiap.projetocuidar.components.TextClickable
 import br.com.fiap.projetocuidar.components.TextsLogin
+import br.com.fiap.projetocuidar.data.AuthViewModel
 import br.com.fiap.projetocuidar.validateSenha
 
 
 @Composable
 fun LoginComponents(
     navController: NavController,
+    authViewModel: AuthViewModel
 ) {
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
-    var emailError by remember { mutableStateOf(false) }
-    val senhaErrorValidate = validateSenha(senha)
-    val emailErrorValidate = ValidateEmail(email)
+    var loginErrorMessage by remember { mutableStateOf<String?>(null) }
+
     var emailErrorMessage by remember { mutableStateOf<String?>(null) }
     var senhaErrorMessage by remember { mutableStateOf<String?>(null) }
+
+    val emailErrorValidate = ValidateEmail(email)
+    val senhaErrorValidate = validateSenha(senha)
 
     Box(
         modifier = Modifier
@@ -77,6 +81,14 @@ fun LoginComponents(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
+                loginErrorMessage?.let { msg ->
+                    Text(
+                        text = msg,
+                        color = Color.Red,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(horizontal = 40.dp)
+                    )
+                }
                 TextsLogin(Modifier, stringResource(R.string.text_email))
                 Spacer(modifier = Modifier.height(5.dp))
                 CaixaDeEntradaEmail(
@@ -131,7 +143,7 @@ fun LoginComponents(
                 TextClickable(
                     Modifier,
                     "Ainda não tem uma conta?",
-                    route = "Registro",
+                    route = "registro",
                     navcontroller = navController,
                     fontSize = 13.sp,
                     offsetX = 30.dp,
@@ -145,15 +157,22 @@ fun LoginComponents(
                     onClick = {
                         emailErrorMessage = emailErrorValidate
                         senhaErrorMessage = senhaErrorValidate
+
                         if (emailErrorValidate == null && senhaErrorValidate == null) {
-                            navController.navigate("mapa")
+                            if (authViewModel.login(email, senha)) {
+                                navController.navigate("home") {
+                                    popUpTo("login") { inclusive = true }
+                                }
+                            } else {
+                                loginErrorMessage = "E-mail ou senha incorretos."
+                            }
                         }
                     },
                     text = stringResource(R.string.text_login),
                     singleLine = true
-                )
-                IconesLogin()
-            }
-        }
-    }
-}
+                    )
+                    IconesLogin(navController = navController, authViewModel = authViewModel)
+                    }
+                    }
+                    }
+                    }

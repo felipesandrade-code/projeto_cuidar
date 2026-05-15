@@ -7,7 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="cor_botao">#E8FFA0</color>]
+    <color name="cor_botao">#E8FFA0</color>
     <color name="cor_registre">#51701A</color>
     <color name="cor_card_footer">#75874F</color>
     <color name="cor_column_registre">#F2F3F5</color>
@@ -19,10 +19,9 @@
     <color name="card_horario_orfanato">#C2EEF7</color>
     <color name="card_fim_de_semana">#A1E9C5</color>
     <color name="icone_info">#50D291</color>
-    <color name="icone_horario">#15BECC</color>"
+    <color name="icone_horario">#15BECC</color>
     <color name="text_fim_de_semana">#37C77F</color>
     <color name="text_horario_orfanato">#6F98AA</color>
     <color name="true_atende_final_de_semana">#FF4CAF50</color>
     <color name="color_erro_email">#FA0000</color>
-
 </resources>

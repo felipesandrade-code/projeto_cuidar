@@ -3,6 +3,7 @@ package br.com.fiap.projetocuidar.components.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -25,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,16 +49,25 @@ import androidx.navigation.compose.rememberNavController
 import br.com.fiap.projetocuidar.R
 import br.com.fiap.projetocuidar.components.LogoComponent
 import br.com.fiap.projetocuidar.components.TextHomeComponent
+import br.com.fiap.projetocuidar.data.AuthViewModel
+import br.com.fiap.projetocuidar.data.OrphanageViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberUpdatedMarkerState
+import com.google.maps.android.compose.rememberMarkerState
 
 @Composable
-fun HomeComponents(modifier: Modifier, navController: NavController) {
+fun HomeComponents(
+    modifier: Modifier, 
+    navController: NavController, 
+    authViewModel: AuthViewModel,
+    orphanageViewModel: OrphanageViewModel
+) {
     var expanded by remember { mutableStateOf(false) }
+    val currentUser by authViewModel.currentUser.collectAsState()
+    val orphanages = orphanageViewModel.orphanages
 
     Box(
         modifier = Modifier
@@ -102,25 +115,25 @@ fun HomeComponents(modifier: Modifier, navController: NavController) {
                             navController.navigate("mapa")
                         }
                     )
-                    DropdownMenuItem(
-                        text = { Text("Orfanato Esperança") },
-                        onClick = {
-                            expanded = false
-                            navController.navigate("orfanatoEsperanca")
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Orfanato Amor de Cristo") },
-                        onClick = {
-                            expanded = false
-                            navController.navigate("orfanatoAmorDeCristo")
-                        }
-                    )
+                    // Menu dinâmico baseado nos orfanatos reais
+                    orphanages.take(3).forEach { o ->
+                        DropdownMenuItem(
+                            text = { Text(o.nome) },
+                            onClick = {
+                                expanded = false
+                                orphanageViewModel.selectOrphanageForDetail(o)
+                                navController.navigate("ong_detail")
+                            }
+                        )
+                    }
                     DropdownMenuItem(
                         text = {Text("Sair")},
                         onClick = {
                             expanded = false
-                            navController.navigate("login")
+                            authViewModel.logout()
+                            navController.navigate("login") {
+                                popUpTo(0) { inclusive = true }
+                            }
                         }
                     )
                 }
@@ -128,7 +141,7 @@ fun HomeComponents(modifier: Modifier, navController: NavController) {
             }
             TextHomeComponent(
                 Modifier,
-                "Mapa Orfanatos",
+                if (currentUser != null) "Olá, ${currentUser?.nome}" else "Mapa Orfanatos",
                 20.sp,
                 FontFamily(Font(R.font.poppins_regular)),
                 10.dp,
@@ -140,29 +153,30 @@ fun HomeComponents(modifier: Modifier, navController: NavController) {
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
-                    .width(300.dp)
-                    .height(300.dp)
-                    .offset(x = 30.dp)
+                    .fillMaxWidth()
+                    .height(250.dp)
             ) {
-                val orfanatos = listOf(
-                    LatLng(-20.4487, -54.6173) to "Orfanato Esperança",
-                    LatLng(-22.908010, -47.077942) to "Orfanato amor de cristo"
-                )
-
                 val cameraPositionState = rememberCameraPositionState {
-                    position = CameraPosition.fromLatLngZoom(orfanatos.first().first, 12f)
+                    if (orphanages.isNotEmpty()) {
+                        position = CameraPosition.fromLatLngZoom(LatLng(orphanages[0].lat, orphanages[0].lng), 10f)
+                    } else {
+                        position = CameraPosition.fromLatLngZoom(LatLng(-23.5505, -46.6333), 10f)
+                    }
                 }
 
                 GoogleMap(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxSize(),
                     cameraPositionState = cameraPositionState
                 ) {
-                    orfanatos.forEach { (coordenada, titulo) ->
+                    orphanages.forEach { o ->
                         Marker(
-                            state = rememberUpdatedMarkerState(position = coordenada),
-                            title = titulo,
-                            snippet = "Clique para detalhes"
+                            state = rememberMarkerState(position = LatLng(o.lat, o.lng)),
+                            title = o.nome,
+                            onClick = {
+                                orphanageViewModel.selectOrphanageForDetail(o)
+                                navController.navigate("ong_detail")
+                                true
+                            }
                         )
                     }
                 }
@@ -170,73 +184,63 @@ fun HomeComponents(modifier: Modifier, navController: NavController) {
             Spacer(modifier = Modifier.height(20.dp))
             TextHomeComponent(
                 Modifier,
-                "Orfanatos",
+                "Orfanatos Próximos",
                 20.sp,
                 FontFamily(Font(R.font.poppins_regular)),
-                130.dp,
+                10.dp,
                 10.dp
             )
-            Spacer(modifier = Modifier.height(30.dp))
-            Row(modifier.fillMaxWidth()) {
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = colorResource(R.color.white)),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .width(170.dp)
-                        .height(170.dp)
-                        .offset(x = 2.dp, y = 5.dp)
-                ) {
-                    Text(
-                        text = "Orf. amor de cristo",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(15.dp),
-                        fontFamily = FontFamily(Font(R.font.nunito_semibold)),
-                    )
-                    Image(
-                        painter = painterResource(R.drawable.orfanato_amor_de_cristo),
-                        contentDescription = "Orfanato amor de cristo",
-                        Modifier
-                            .size(180.dp)
-                            .align(Alignment.CenterHorizontally)
-                            .clickable(onClick = {navController.navigate("orfanatoAmorDeCristo")})
-                    )
-                }
-                Spacer(modifier = Modifier.width(20.dp))
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = colorResource(R.color.white)),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier
-                        .width(170.dp)
-                        .height(170.dp)
-                        .offset(x = -1.dp, y = 5.dp)
-                ) {
-                    Text(
-                        text = "Orf. Esperança",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(15.dp),
-                        fontFamily = FontFamily(Font(R.font.nunito_semibold))
-                    )
-                    Image(
-                        painter = painterResource(R.drawable.orfanato3),
-                        contentDescription = "Orfanato Esperança",
-                        Modifier
-                            .size(180.dp)
-                            .align(alignment = Alignment.CenterHorizontally)
-                            .clickable(onClick = {navController.navigate("orfanatoEsperanca")}),
-                        contentScale = ContentScale.FillBounds,
-                    )
+            Spacer(modifier = Modifier.height(10.dp))
+            
+            // Lista horizontal real de orfanatos
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(orphanages) { o ->
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = colorResource(R.color.white)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier
+                            .width(170.dp)
+                            .height(180.dp)
+                            .clickable {
+                                orphanageViewModel.selectOrphanageForDetail(o)
+                                navController.navigate("ong_detail")
+                            }
+                    ) {
+                        Column {
+                            Text(
+                                text = o.nome,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                                fontFamily = FontFamily(Font(R.font.nunito_semibold)),
+                                maxLines = 1
+                            )
+                            Image(
+                                painter = painterResource(R.drawable.orfanato3), // Placeholder real
+                                contentDescription = o.nome,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 }
 
+/*
 @Preview
 @Composable
 private fun HomeComponentsPreview() {
-    HomeComponents(Modifier, navController = rememberNavController())
+    HomeComponents(
+        modifier = Modifier, 
+        navController = rememberNavController(), 
+        authViewModel = AuthViewModel(),
+        orphanageViewModel = OrphanageViewModel(android.app.Application())
+    )
 }
+*/

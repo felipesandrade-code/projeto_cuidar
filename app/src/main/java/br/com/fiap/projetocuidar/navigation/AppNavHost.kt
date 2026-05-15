@@ -8,23 +8,27 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import br.com.fiap.projetocuidar.Screens.CadastroOngScreen
 
+import br.com.fiap.projetocuidar.Screens.HomeScreen
 import br.com.fiap.projetocuidar.Screens.LoginScreen
 import br.com.fiap.projetocuidar.Screens.MapaScreen
 import br.com.fiap.projetocuidar.Screens.MapaSelectScreen
 import br.com.fiap.projetocuidar.Screens.OrfanatoDetalheScreen
 import br.com.fiap.projetocuidar.Screens.RegistroUsuarioScreen
+import br.com.fiap.projetocuidar.data.AuthViewModel
 import br.com.fiap.projetocuidar.data.OrphanageViewModel
 
 @Composable
 fun AppNavHost(playServicesOk: Boolean) {
     val app = LocalContext.current.applicationContext as Application
     val vm: OrphanageViewModel = viewModel (factory = OrphanageViewModel.Factory(app))
+    val authVm: AuthViewModel = viewModel()
 
     val nav = androidx.navigation.compose.rememberNavController()
 
     NavHost(navController = nav, startDestination = "login") {
-        composable("login") { LoginScreen(nav) }
-        composable("registro"){ RegistroUsuarioScreen(nav) }
+        composable("login") { LoginScreen(nav, authVm) }
+        composable("registro"){ RegistroUsuarioScreen(nav, authVm) }
+        composable("home") { HomeScreen(nav, authVm, vm) }
         composable("mapa") { MapaScreen(nav, vm) }
 
         composable("map_select") { MapaSelectScreen(nav, vm) }

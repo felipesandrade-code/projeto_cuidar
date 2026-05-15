@@ -43,7 +43,8 @@ fun CaixaDeEntradaComponent(
     caixaDeEntradaOffsetY:  Dp,
     caixaDeEntradaSize: Dp,
     singleLine: Boolean,
-    isError: Boolean
+    isError: Boolean,
+    visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
     val minheight = if (caixaDeEntradaSize < 56.dp) 56.dp else caixaDeEntradaSize
     OutlinedTextField(
@@ -62,6 +63,8 @@ fun CaixaDeEntradaComponent(
         singleLine = singleLine,
         shape = Shapes().medium,
         textStyle = TextStyle(color = colorResource(R.color.black)),
+        isError = isError,
+        visualTransformation = visualTransformation
     )
 }
 
