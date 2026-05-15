@@ -1,20 +1,26 @@
 package br.com.fiap.projetocuidar.Screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import br.com.fiap.projetocuidar.R
 import br.com.fiap.projetocuidar.components.*
@@ -39,117 +45,144 @@ fun OrfanatoDetalheScreen(
     val lng = local?.lng ?: place?.lng ?: 0.0
     val categoria = local?.categoria ?: "—"
     val telefone = local?.telefone ?: "—"
-    val sobre = local?.sobre ?: "—"
-    val instrucao = local?.instrucaoVisita ?: "—"
-    val horario = local?.horarioVisita ?: "—"
+    val sobre = local?.sobre ?: ""
+    val instrucao = local?.instrucaoVisita ?: ""
+    val horario = local?.horarioVisita ?: ""
     val fimDeSemana = local?.fimDeSemana ?: false
 
-    Box(
+    val verdePrimario = colorResource(R.color.cor_registre)
+    val verdeSecundario = colorResource(R.color.cor_card_footer)
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .fillMaxWidth()
-            .background(color = colorResource(R.color.cor_column_registre))
+            .background(colorResource(R.color.cor_column_registre))
+            .verticalScroll(rememberScrollState())
     ) {
-        SuperiorOngComponent(Modifier, stringResource(R.string.text_name), navController)
+        SuperiorOngComponent(Modifier, nome, navController)
 
-        Column(
+        // Foto do orfanato
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .offset(y = 70.dp)
+                .height(220.dp)
         ) {
-            Spacer(modifier = Modifier.height(25.dp))
-            TextTituloOngComponent(Modifier, nome)
-
-            TextOngComponent(
-                Modifier,
-                if (sobre.isBlank()) "Sem descrição disponível." else sobre,
-                TextAlign.Center,
-                padding = 20.dp,
-                FontFamily(Font(R.font.nunito_semibold)),
+            Image(
+                painter = painterResource(R.drawable.orfanato3),
+                contentDescription = nome,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
             )
-
-            Card(
-                colors = CardDefaults.cardColors(containerColor = colorResource(R.color.white)),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier
-                    .width(260.dp)
-                    .height(160.dp)
-                    .align(Alignment.CenterHorizontally)
-            ) {
-                val point = LatLng(lat, lng)
-                val cameraPositionState = rememberCameraPositionState {
-                    position = CameraPosition.fromLatLngZoom(point, 14f)
-                }
-                val markerState = rememberMarkerState(position = point)
-                Box(Modifier.fillMaxSize()) {
-                    GoogleMap(
-                        modifier = Modifier.fillMaxSize(),
-                        cameraPositionState = cameraPositionState
-                    ) {
-                        Marker(
-                            state = markerState,
-                            title = nome,
-                            snippet = categoria
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                TextTituloOngComponent(Modifier,"Instruções para visita")
-                TextOngComponent(
-                    Modifier,
-                    if (instrucao.isBlank()) "Sem instruções cadastradas." else instrucao,
-                    TextAlign.Center,
-                    padding = 5.dp,
-                    FontFamily(Font(R.font.nunito_semibold)),
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                CardComponentOng(
-                    modifier = Modifier,
-                    painterResource(R.drawable.icon_clock),
-                    "Ícone horário",
-                    colorResource(R.color.icone_horario),
-                    colorResource(R.color.card_horario_orfanato),
-                    if (horario.isBlank()) "Horário não informado" else horario,
-                    colorResource(R.color.text_horario_orfanato)
-                )
-                Spacer(modifier = Modifier.width(40.dp))
-                CardComponentOng(
-                    painter = painterResource(R.drawable.icons_info),
-                    contentDescription = "Ícone informação",
-                    tint = colorResource(R.color.icone_info),
-                    cardColors = colorResource(R.color.card_fim_de_semana),
-                    text = if (fimDeSemana) "Atendemos no fim de semana!" else "Não atendemos no fim de semana",
-                    colorText = colorResource(R.color.text_fim_de_semana)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            ButtonsComponent(
-                modifier = Modifier,
-                buttonwidth = 250.dp,
-                buttonOffsetX = 80.dp,
-                onClick = { /*  */ },
-                buttonOffsetY = 0.dp,
-                text = if (telefone == "—") "Sem contato" else "Entrar em contato",
-                singleLine = true
-            )
-            Spacer(modifier = Modifier.height(32.dp))
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Nome
+        Text(
+            text = nome,
+            fontFamily = FontFamily(Font(R.font.nunito_bold)),
+            fontSize = 22.sp,
+            color = verdePrimario,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Descrição
+        if (sobre.isNotBlank()) {
+            Text(
+                text = sobre,
+                fontFamily = FontFamily(Font(R.font.nunito_semibold)),
+                fontSize = 14.sp,
+                color = colorResource(R.color.texto_orfanato),
+                modifier = Modifier.padding(horizontal = 16.dp),
+                textAlign = TextAlign.Start
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        // Mapa mini
+        Card(
+            colors = CardDefaults.cardColors(containerColor = colorResource(R.color.white)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(180.dp)
+                .padding(horizontal = 16.dp)
+        ) {
+            val point = LatLng(lat, lng)
+            val cameraPositionState = rememberCameraPositionState {
+                position = CameraPosition.fromLatLngZoom(point, 14f)
+            }
+            val markerState = rememberMarkerState(position = point)
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState
+            ) {
+                Marker(state = markerState, title = nome, snippet = categoria)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        ButtonVerMapa()
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Instruções para visita
+        Text(
+            text = "Instruções para visita",
+            fontFamily = FontFamily(Font(R.font.nunito_bold)),
+            fontSize = 18.sp,
+            color = verdePrimario,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+        if (instrucao.isNotBlank()) {
+            Text(
+                text = instrucao,
+                fontFamily = FontFamily(Font(R.font.nunito_semibold)),
+                fontSize = 14.sp,
+                color = colorResource(R.color.texto_orfanato),
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Cards de horário e fim de semana
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            CardComponentOng(
+                modifier = Modifier,
+                painter = painterResource(R.drawable.icon_clock),
+                contentDescription = "Ícone horário",
+                tint = colorResource(R.color.icone_horario),
+                cardColors = colorResource(R.color.card_horario_orfanato),
+                text = if (horario.isBlank()) "Horário não informado" else horario,
+                colorText = colorResource(R.color.text_horario_orfanato)
+            )
+            Spacer(modifier = Modifier.width(24.dp))
+            CardComponentOng(
+                painter = painterResource(R.drawable.icons_info),
+                contentDescription = "Ícone informação",
+                tint = colorResource(R.color.icone_info),
+                cardColors = colorResource(R.color.card_fim_de_semana),
+                text = if (fimDeSemana) "Atendemos fim de semana" else "Não atendemos fim de semana",
+                colorText = colorResource(R.color.text_fim_de_semana)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Botão entrar em contato
+        PrimaryButton(
+            text = if (telefone == "—") "Sem contato cadastrado" else "Entrar em contato",
+            onClick = { }
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }

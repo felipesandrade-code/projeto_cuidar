@@ -1,44 +1,63 @@
 package br.com.fiap.projetocuidar.components.login
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import br.com.fiap.projetocuidar.R
 import br.com.fiap.projetocuidar.ValidateEmail
-import br.com.fiap.projetocuidar.components.ButtonsComponent
-import br.com.fiap.projetocuidar.components.CaixaDeEntradaEmail
-import br.com.fiap.projetocuidar.components.CaixaDeEntradaSenha
-import br.com.fiap.projetocuidar.components.IconesLogin
-import br.com.fiap.projetocuidar.components.ImgComponent
+import br.com.fiap.projetocuidar.components.FormFieldLabel
 import br.com.fiap.projetocuidar.components.LogoComponent
-import br.com.fiap.projetocuidar.components.TextClickable
-import br.com.fiap.projetocuidar.components.TextsLogin
+import br.com.fiap.projetocuidar.components.PrimaryButton
+import br.com.fiap.projetocuidar.data.AuthState
 import br.com.fiap.projetocuidar.data.AuthViewModel
 import br.com.fiap.projetocuidar.validateSenha
-
 
 @Composable
 fun LoginComponents(
@@ -47,132 +66,188 @@ fun LoginComponents(
 ) {
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
-    var loginErrorMessage by remember { mutableStateOf<String?>(null) }
-
+    var senhaOculta by remember { mutableStateOf(true) }
     var emailErrorMessage by remember { mutableStateOf<String?>(null) }
     var senhaErrorMessage by remember { mutableStateOf<String?>(null) }
+    var apiErrorMessage by remember { mutableStateOf<String?>(null) }
 
-    val emailErrorValidate = ValidateEmail(email)
-    val senhaErrorValidate = validateSenha(senha)
+    val authState by authViewModel.authState.collectAsState()
+    val isLoading = authState is AuthState.Loading
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .fillMaxWidth()
-            .background(color = colorResource(R.color.white))
-    )
-    {
-        Row(modifier = Modifier.fillMaxWidth()) {
-            ImgComponent()
+    LaunchedEffect(authState) {
+        when (val state = authState) {
+            is AuthState.Success -> {
+                navController.navigate(state.navigateTo) {
+                    popUpTo("login") { inclusive = true }
+                }
+                authViewModel.resetAuthState()
+            }
+            is AuthState.Error -> {
+                apiErrorMessage = state.message
+                authViewModel.resetAuthState()
+            }
+            else -> {}
         }
+    }
+
+    val fieldColors = OutlinedTextFieldDefaults.colors(
+        focusedContainerColor = Color.White,
+        unfocusedContainerColor = Color.White,
+        focusedBorderColor = colorResource(R.color.cor_registre),
+        unfocusedBorderColor = Color.LightGray
+    )
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(R.drawable.kids),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.52f)
+                .align(Alignment.TopCenter),
+            contentScale = ContentScale.Crop
+        )
+
         Column(
             modifier = Modifier
-                .offset(y = 240.dp)
                 .fillMaxWidth()
-                .height(650.dp)
-                .background(
-                    color = colorResource(R.color.cor_column_registre),
-                    shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
-                ),
+                .fillMaxHeight(0.64f)
+                .align(Alignment.BottomCenter)
+                .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+                .background(colorResource(R.color.cor_column_registre))
+                .verticalScroll(rememberScrollState())
+                .padding(vertical = 20.dp)
         ) {
-            LogoComponent("Logo", logoSize = 130.dp, logoOffsetX = 10.dp, logoOffsetY = 10.dp)
-            Spacer(modifier = Modifier.height(20.dp))
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
+            Row(
+                modifier = Modifier.padding(start = 20.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                loginErrorMessage?.let { msg ->
-                    Text(
-                        text = msg,
-                        color = Color.Red,
-                        fontSize = 14.sp,
-                        modifier = Modifier.padding(horizontal = 40.dp)
-                    )
-                }
-                TextsLogin(Modifier, stringResource(R.string.text_email))
-                Spacer(modifier = Modifier.height(5.dp))
-                CaixaDeEntradaEmail(
-                    modifier = Modifier,
-                    value = email,
-                    onvalueChange = { email = it },
-                    keyboardType = KeyboardType.Email,
-                    capitalization = KeyboardCapitalization.None,
-                    singleLine = true,
-                    caixaDeEntradaWidth = 310.dp,
-                    caixaDeEntradaPaddingStart = 0.dp,
-                    caixaDeEntradaPaddingTop = 0.dp,
-                    caixaDeEntradaOffsetX = 40.dp,
-                    caixaDeEntradaOffsetY = 0.dp,
-                    caixaDeEntradaSize = 56.dp,
-                    isError = emailErrorMessage != null
+                LogoComponent("Logo", 56.dp, 0.dp, 0.dp)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Cuidar+",
+                    fontSize = 22.sp,
+                    fontFamily = FontFamily(Font(R.font.nunito_bold)),
+                    color = colorResource(R.color.cor_registre)
                 )
-                emailErrorMessage?.let { msg ->
-                    Text(
-                        text = "Digite um e-mail válido",
-                        color = Color.Red,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(start = 40.dp, top = 4.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-                TextsLogin(Modifier, stringResource(R.string.text_senha))
-                Spacer(modifier = Modifier.height(5.dp))
-                CaixaDeEntradaSenha(
-                    modifier = Modifier,
-                    value = senha,
-                    onvalueChange = { senha = it },
-                    keyboardType = KeyboardType.Password,
-                    capitalization = KeyboardCapitalization.None,
-                    singleLine = true,
-                    caixaDeEntradaWidth = 310.dp,
-                    caixaDeEntradaPaddingStart = 0.dp,
-                    caixaDeEntradaPaddingTop = 0.dp,
-                    caixaDeEntradaOffsetX = 40.dp,
-                    caixaDeEntradaOffsetY = 0.dp,
-                    caixaDeEntradaSize = 56.dp,
-                    isPassword = true
-                )
-                senhaErrorMessage?.let { msg ->
-                    Text(
-                        text = "senha inválida, digite novamente.",
-                        color = Color.Red,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(start = 40.dp, top = 4.dp)
-                    )
-                }
-                TextClickable(
-                    Modifier,
-                    "Ainda não tem uma conta?",
-                    route = "registro",
-                    navcontroller = navController,
-                    fontSize = 13.sp,
-                    offsetX = 30.dp,
-                    offsetY = 5.dp
-                )
-                ButtonsComponent(
-                    modifier = Modifier,
-                    buttonwidth = 280.dp,
-                    buttonOffsetX = 55.dp,
-                    buttonOffsetY = 30.dp,
-                    onClick = {
-                        emailErrorMessage = emailErrorValidate
-                        senhaErrorMessage = senhaErrorValidate
+            }
 
-                        if (emailErrorValidate == null && senhaErrorValidate == null) {
-                            if (authViewModel.login(email, senha)) {
-                                navController.navigate("home") {
-                                    popUpTo("login") { inclusive = true }
-                                }
-                            } else {
-                                loginErrorMessage = "E-mail ou senha incorretos."
-                            }
-                        }
-                    },
-                    text = stringResource(R.string.text_login),
-                    singleLine = true
-                    )
-                    IconesLogin(navController = navController, authViewModel = authViewModel)
+            Spacer(modifier = Modifier.height(20.dp))
+
+            apiErrorMessage?.let { msg ->
+                Text(
+                    text = msg,
+                    color = Color.Red,
+                    fontSize = 13.sp,
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            FormFieldLabel("Email")
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it; apiErrorMessage = null },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                placeholder = { Text("Digite o seu e-mail", color = Color.Gray, fontSize = 14.sp) },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    capitalization = KeyboardCapitalization.None
+                ),
+                shape = RoundedCornerShape(12.dp),
+                colors = fieldColors,
+                isError = emailErrorMessage != null,
+                enabled = !isLoading
+            )
+            emailErrorMessage?.let {
+                Text("Digite um e-mail válido", color = Color.Red, fontSize = 12.sp,
+                    modifier = Modifier.padding(start = 24.dp, top = 2.dp))
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            FormFieldLabel("Senha")
+            OutlinedTextField(
+                value = senha,
+                onValueChange = { senha = it; apiErrorMessage = null },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                placeholder = { Text("Digite a sua senha", color = Color.Gray, fontSize = 14.sp) },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    capitalization = KeyboardCapitalization.None
+                ),
+                visualTransformation = if (senhaOculta) PasswordVisualTransformation() else VisualTransformation.None,
+                trailingIcon = {
+                    IconButton(onClick = { senhaOculta = !senhaOculta }) {
+                        Icon(
+                            imageVector = if (senhaOculta) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                            contentDescription = null,
+                            tint = colorResource(R.color.cor_text_login)
+                        )
                     }
+                },
+                shape = RoundedCornerShape(12.dp),
+                colors = fieldColors,
+                isError = senhaErrorMessage != null,
+                enabled = !isLoading
+            )
+            senhaErrorMessage?.let {
+                Text("Senha inválida, digite novamente.", color = Color.Red, fontSize = 12.sp,
+                    modifier = Modifier.padding(start = 24.dp, top = 2.dp))
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            if (isLoading) {
+                CircularProgressIndicator(
+                    color = colorResource(R.color.cor_registre),
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(bottom = 8.dp)
+                )
+            }
+
+            PrimaryButton(
+                text = "Entrar",
+                onClick = {
+                    val emailError = ValidateEmail(email)
+                    val senhaError = validateSenha(senha)
+                    emailErrorMessage = emailError
+                    senhaErrorMessage = senhaError
+                    if (emailError == null && senhaError == null) {
+                        authViewModel.login(email, senha)
                     }
+                },
+                modifier = Modifier.then(if (isLoading) Modifier else Modifier)
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Row(
+                modifier = Modifier.padding(horizontal = 20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Não tem conta? ",
+                    fontSize = 13.sp,
+                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                    color = colorResource(R.color.cor_text_login)
+                )
+                Text(
+                    text = "Crie aqui",
+                    fontSize = 13.sp,
+                    color = colorResource(R.color.cor_registre),
+                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier.clickable(enabled = !isLoading) {
+                        navController.navigate("registro")
                     }
-                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+        }
+    }
+}

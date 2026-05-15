@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\Master\\\\Documents\\\\Projetos\\\\projeto_cuidar\" -Force)",
+      "Bash(Select-Object Name, PSIsContainer)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(python *)",
+      "Bash(Select-Object Name, FullName)"
+    ]
+  }
+}

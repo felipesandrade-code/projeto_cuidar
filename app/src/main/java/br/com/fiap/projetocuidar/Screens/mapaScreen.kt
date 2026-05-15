@@ -65,6 +65,7 @@ fun MapaScreen(navcontroller: NavController, vm: OrphanageViewModel) {
 
     LaunchedEffect(Unit) {
         runCatching { MapsInitializer.initialize(context, Renderer.LATEST) {} }
+        vm.loadOrphanages()
     }
 
     var hasLocationPermission by remember { mutableStateOf(false) }

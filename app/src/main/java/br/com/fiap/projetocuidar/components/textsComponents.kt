@@ -26,10 +26,10 @@ fun TextsLogin(
 ) {
     Text(
         text = text,
-        fontSize = 15.sp,
-        color = colorResource(R.color.cor_text_login),
-        fontFamily = FontFamily(Font(R.font.nunito_bold)),
-        modifier = Modifier.offset(x = 30.dp)
+        fontSize = 14.sp,
+        color = colorResource(R.color.cor_registre),
+        fontFamily = FontFamily(Font(R.font.nunito_semibold)),
+        modifier = Modifier.padding(start = 20.dp, bottom = 4.dp)
     )
 }
 
@@ -94,10 +94,21 @@ fun TextCadastroOng(
 ){
     Text(
         text = text,
-        fontSize = 15.sp,
-        color = colorResource(R.color.cor_text_login),
+        fontSize = 14.sp,
+        color = colorResource(R.color.cor_registre),
         fontFamily = FontFamily(Font(R.font.nunito_semibold)),
-        modifier = Modifier.padding(start = 32.dp, bottom = 2.dp)
+        modifier = Modifier.padding(start = 20.dp, bottom = 4.dp)
+    )
+}
+
+@Composable
+fun FormFieldLabel(text: String) {
+    Text(
+        text = text,
+        fontSize = 14.sp,
+        color = colorResource(R.color.cor_registre),
+        fontFamily = FontFamily(Font(R.font.nunito_semibold)),
+        modifier = Modifier.padding(start = 20.dp, bottom = 4.dp)
     )
 }
 
@@ -129,9 +140,9 @@ fun TextClickable(
 fun TextRegisterUsuario(text: String){
     Text(
         text = text,
-        fontSize = 15.sp,
-        color = colorResource(R.color.cor_text_login),
+        fontSize = 14.sp,
+        color = colorResource(R.color.cor_registre),
         fontFamily = FontFamily(Font(R.font.nunito_semibold)),
-        modifier = Modifier.padding(start = 32.dp)
+        modifier = Modifier.padding(start = 20.dp, bottom = 4.dp)
     )
 }

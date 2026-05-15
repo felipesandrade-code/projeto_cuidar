@@ -7,9 +7,19 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,261 +29,262 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import br.com.fiap.projetocuidar.R
 import br.com.fiap.projetocuidar.ValidateEmail
-import br.com.fiap.projetocuidar.components.ButtonsComponent
-import br.com.fiap.projetocuidar.components.CaixaDeEntradaComponent
 import br.com.fiap.projetocuidar.components.DividerComponent
+import br.com.fiap.projetocuidar.components.FormFieldLabel
+import br.com.fiap.projetocuidar.components.PrimaryButton
 import br.com.fiap.projetocuidar.components.SuperiorRegister
-import br.com.fiap.projetocuidar.components.TextClickable
-import br.com.fiap.projetocuidar.components.TextRegisterUsuario
 import br.com.fiap.projetocuidar.components.TituloComponents
+import br.com.fiap.projetocuidar.data.AuthState
 import br.com.fiap.projetocuidar.data.AuthViewModel
 import br.com.fiap.projetocuidar.data.User
 import br.com.fiap.projetocuidar.util.TelefoneVisualTransformation
 import br.com.fiap.projetocuidar.validateSenha
 import br.com.fiap.projetocuidar.validateTelefone
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterComponents(modifier: Modifier = Modifier, navcontroller: NavController, authViewModel: AuthViewModel) {
-    var senha by remember { mutableStateOf("") }
+fun RegisterComponents(
+    modifier: Modifier = Modifier,
+    navcontroller: NavController,
+    authViewModel: AuthViewModel
+) {
     var email by remember { mutableStateOf("") }
+    var senha by remember { mutableStateOf("") }
     var nome by remember { mutableStateOf("") }
-    var sobrenome by remember { mutableStateOf("") }
     var telefone by remember { mutableStateOf("") }
+    var cpfCnpj by remember { mutableStateOf("") }
+    var tipoUsuario by remember { mutableStateOf("") }
+    var tipoExpanded by remember { mutableStateOf(false) }
 
     var emailErrorMessage by remember { mutableStateOf<String?>(null) }
     var nomeErrorMessage by remember { mutableStateOf<String?>(null) }
-    var sobrenomeErrorMessage by remember { mutableStateOf<String?>(null) }
     var telefoneErrorMessage by remember { mutableStateOf<String?>(null) }
     var senhaErrorMessage by remember { mutableStateOf<String?>(null) }
+    var cpfCnpjErrorMessage by remember { mutableStateOf<String?>(null) }
+    var tipoErrorMessage by remember { mutableStateOf<String?>(null) }
     var registrationErrorMessage by remember { mutableStateOf<String?>(null) }
+
+    val authState by authViewModel.authState.collectAsState()
+    val isLoading = authState is AuthState.Loading
+
+    LaunchedEffect(authState) {
+        when (val state = authState) {
+            is AuthState.Success -> {
+                navcontroller.navigate(state.navigateTo) {
+                    popUpTo("registro") { inclusive = true }
+                }
+                authViewModel.resetAuthState()
+            }
+            is AuthState.Error -> {
+                registrationErrorMessage = state.message
+                authViewModel.resetAuthState()
+            }
+            else -> {}
+        }
+    }
 
     val validarEmail = ValidateEmail(email)
     val validarSenha = validateSenha(senha)
     val validarTelefone = validateTelefone(telefone)
 
+    val tipoOptions = listOf("Voluntário", "Doador")
+
+    val fieldColors = OutlinedTextFieldDefaults.colors(
+        focusedContainerColor = Color.White,
+        unfocusedContainerColor = Color.White,
+        focusedBorderColor = colorResource(R.color.cor_registre),
+        unfocusedBorderColor = Color.LightGray
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .fillMaxWidth()
             .background(color = colorResource(R.color.cor_column_registre))
-    )
-    {
-        SuperiorRegister(Modifier,stringResource(R.string.text_login), navcontroller)
+    ) {
+        SuperiorRegister(Modifier, "Cadastro", navcontroller)
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .offset(y = 75.dp)
-                .padding(15.dp)
+                .padding(top = 56.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = 24.dp)
         ) {
+            Spacer(modifier = Modifier.height(16.dp))
             TituloComponents(Modifier, "Crie sua conta", 30.sp)
             DividerComponent()
+            Spacer(modifier = Modifier.height(16.dp))
 
             registrationErrorMessage?.let { msg ->
                 Text(
                     text = msg,
                     color = Color.Red,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(vertical = 4.dp)
+                    fontSize = 13.sp,
+                    modifier = Modifier.padding(horizontal = 20.dp)
                 )
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
-            TextRegisterUsuario(stringResource(R.string.text_email))
-            Spacer(modifier = Modifier.height(5.dp))
-            CaixaDeEntradaComponent(
-                Modifier,
+            FormFieldLabel("Email")
+            OutlinedTextField(
                 value = email,
-                onvalueChange = { email = it },
-                keyboardType = KeyboardType.Email,
-                capitalization = KeyboardCapitalization.None,
-                caixaDeEntradaWidth = 300.dp,
-                caixaDeEntradaPaddingStart = 0.dp,
-                caixaDeEntradaPaddingTop = 0.dp,
-                caixaDeEntradaOffsetX = 30.dp,
-                caixaDeEntradaOffsetY = 0.dp,
-                caixaDeEntradaSize = 46.dp,
+                onValueChange = { email = it },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                placeholder = { Text("Digite o seu e-mail", color = Color.Gray, fontSize = 14.sp) },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, capitalization = KeyboardCapitalization.None),
+                shape = RoundedCornerShape(12.dp),
+                colors = fieldColors,
                 isError = emailErrorMessage != null
             )
-            emailErrorMessage?.let { msg ->
-                Text(
-                    text = msg,
-                    color = Color.Red,
-                    fontSize = 11.sp,
-                    modifier = Modifier.offset(x = 30.dp)
-                )
+            emailErrorMessage?.let {
+                Text(it, color = Color.Red, fontSize = 11.sp, modifier = Modifier.padding(start = 24.dp, top = 2.dp))
             }
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            TextRegisterUsuario(stringResource(R.string.text_senha))
-            Spacer(modifier = Modifier.height(5.dp))
-            CaixaDeEntradaComponent(
-                Modifier,
-                value = senha,
-                onvalueChange = { senha = it },
-                keyboardType = KeyboardType.Password,
-                capitalization = KeyboardCapitalization.None,
-                caixaDeEntradaWidth = 300.dp,
-                caixaDeEntradaPaddingStart = 0.dp,
-                caixaDeEntradaPaddingTop = 0.dp,
-                caixaDeEntradaOffsetX = 30.dp,
-                caixaDeEntradaOffsetY = 0.dp,
-                caixaDeEntradaSize = 46.dp,
-                singleLine = true,
-                isError = senhaErrorMessage != null
-            )
-            senhaErrorMessage?.let { msg ->
-                Text(
-                    text = msg,
-                    color = Color.Red,
-                    fontSize = 11.sp,
-                    modifier = Modifier.offset(x = 30.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            TextRegisterUsuario(stringResource(R.string.text_name))
-            Spacer(modifier = Modifier.height(5.dp))
-            CaixaDeEntradaComponent(
-                Modifier,
+            FormFieldLabel("Nome")
+            OutlinedTextField(
                 value = nome,
-                onvalueChange = { nome = it },
-                keyboardType = KeyboardType.Text,
-                capitalization = KeyboardCapitalization.Words,
-                caixaDeEntradaWidth = 300.dp,
-                caixaDeEntradaPaddingStart = 0.dp,
-                caixaDeEntradaPaddingTop = 0.dp,
-                caixaDeEntradaOffsetX = 30.dp,
-                caixaDeEntradaOffsetY = 0.dp,
-                caixaDeEntradaSize = 46.dp,
+                onValueChange = { nome = it },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                placeholder = { Text("Digite o seu nome", color = Color.Gray, fontSize = 14.sp) },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, capitalization = KeyboardCapitalization.Words),
+                shape = RoundedCornerShape(12.dp),
+                colors = fieldColors,
                 isError = nomeErrorMessage != null
             )
-            nomeErrorMessage?.let { msg ->
-                Text(
-                    msg,
-                    color = Color.Red,
-                    fontSize = 11.sp,
-                    modifier = Modifier.offset(x = 30.dp)
-                )
+            nomeErrorMessage?.let {
+                Text(it, color = Color.Red, fontSize = 11.sp, modifier = Modifier.padding(start = 24.dp, top = 2.dp))
             }
+            Spacer(modifier = Modifier.height(12.dp))
 
-            Spacer(modifier = Modifier.size(10.dp))
-
-            TextRegisterUsuario(stringResource(R.string.text_surname))
-            Spacer(modifier = Modifier.height(5.dp))
-            CaixaDeEntradaComponent(
-                Modifier,
-                value = sobrenome,
-                onvalueChange = { sobrenome = it},
-                keyboardType = KeyboardType.Text,
-                capitalization = KeyboardCapitalization.Words,
-                caixaDeEntradaWidth = 300.dp,
-                caixaDeEntradaPaddingStart = 0.dp,
-                caixaDeEntradaPaddingTop = 0.dp,
-                caixaDeEntradaOffsetX = 30.dp,
-                caixaDeEntradaOffsetY = 0.dp,
-                caixaDeEntradaSize = 46.dp,
-                singleLine = true,
-                isError = sobrenomeErrorMessage != null
-            )
-            sobrenomeErrorMessage?.let { msg ->
-                Text(
-                    msg,
-                    color = Color.Red,
-                    fontSize = 11.sp,
-                    modifier = Modifier.offset(30.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            TextRegisterUsuario(stringResource(R.string.text_telefone))
-            Spacer(modifier = Modifier.height(5.dp))
-            CaixaDeEntradaComponent(
-                Modifier,
+            FormFieldLabel("Telefone")
+            OutlinedTextField(
                 value = telefone,
-                onvalueChange = { 
-                    if (it.all { char -> char.isDigit() } && it.length <= 11) {
-                        telefone = it 
-                    }
-                },
-                keyboardType = KeyboardType.Number,
-                capitalization = KeyboardCapitalization.None,
-                caixaDeEntradaWidth = 300.dp,
-                caixaDeEntradaPaddingStart = 0.dp,
-                caixaDeEntradaPaddingTop = 0.dp,
-                caixaDeEntradaOffsetX = 30.dp,
-                caixaDeEntradaOffsetY = 0.dp,
-                caixaDeEntradaSize = 46.dp,
+                onValueChange = { if (it.all { c -> c.isDigit() } && it.length <= 11) telefone = it },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                placeholder = { Text("Digite o seu telefone com o DDD", color = Color.Gray, fontSize = 14.sp) },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                shape = RoundedCornerShape(12.dp),
+                colors = fieldColors,
                 isError = telefoneErrorMessage != null,
                 visualTransformation = TelefoneVisualTransformation()
             )
-            telefoneErrorMessage?.let { msg ->
-                Text(
-                    msg,
-                    color = Color.Red,
-                    fontSize = 11.sp,
-                    modifier = Modifier.offset(x = 30.dp)
+            telefoneErrorMessage?.let {
+                Text(it, color = Color.Red, fontSize = 11.sp, modifier = Modifier.padding(start = 24.dp, top = 2.dp))
+            }
+            Spacer(modifier = Modifier.height(12.dp))
 
+            FormFieldLabel("Senha")
+            OutlinedTextField(
+                value = senha,
+                onValueChange = { senha = it },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                placeholder = { Text("Digite a sua senha", color = Color.Gray, fontSize = 14.sp) },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, capitalization = KeyboardCapitalization.None),
+                shape = RoundedCornerShape(12.dp),
+                colors = fieldColors,
+                isError = senhaErrorMessage != null
+            )
+            senhaErrorMessage?.let {
+                Text(it, color = Color.Red, fontSize = 11.sp, modifier = Modifier.padding(start = 24.dp, top = 2.dp))
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+
+            FormFieldLabel("CPF/CNPJ")
+            OutlinedTextField(
+                value = cpfCnpj,
+                onValueChange = { cpfCnpj = it },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                placeholder = { Text("Digite o seu cpf/cnpj", color = Color.Gray, fontSize = 14.sp) },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                shape = RoundedCornerShape(12.dp),
+                colors = fieldColors,
+                isError = cpfCnpjErrorMessage != null
+            )
+            cpfCnpjErrorMessage?.let {
+                Text(it, color = Color.Red, fontSize = 11.sp, modifier = Modifier.padding(start = 24.dp, top = 2.dp))
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+
+            FormFieldLabel("Tipo de usuário")
+            ExposedDropdownMenuBox(
+                expanded = tipoExpanded,
+                onExpandedChange = { tipoExpanded = !tipoExpanded },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
+            ) {
+                OutlinedTextField(
+                    value = tipoUsuario,
+                    onValueChange = {},
+                    readOnly = true,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = tipoExpanded) },
+                    placeholder = { Text("Selecione se você é voluntário ou doador", color = Color.Gray, fontSize = 13.sp) },
+                    modifier = Modifier.fillMaxWidth().menuAnchor(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = fieldColors,
+                    isError = tipoErrorMessage != null
                 )
+                ExposedDropdownMenu(
+                    expanded = tipoExpanded,
+                    onDismissRequest = { tipoExpanded = false }
+                ) {
+                    tipoOptions.forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(option, fontFamily = FontFamily(Font(R.font.nunito_regular))) },
+                            onClick = {
+                                tipoUsuario = option
+                                tipoExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+            tipoErrorMessage?.let {
+                Text(it, color = Color.Red, fontSize = 11.sp, modifier = Modifier.padding(start = 24.dp, top = 2.dp))
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            Spacer(modifier = Modifier.height(8.dp))
-            TextClickable(
-                text = "Já tem uma conta?",
-                navcontroller = navcontroller,
-                route = "login",
-                fontSize = 14.sp,
-                offsetX = 40.dp,
-                offsetY = 0.dp
-            )
-            ButtonsComponent(
-                modifier = Modifier,
-                buttonwidth = 280.dp,
-                buttonOffsetX = 45.dp,
-                buttonOffsetY = 20.dp,
+            PrimaryButton(
+                text = if (isLoading) "Criando..." else "Criar",
                 onClick = {
-                    sobrenomeErrorMessage = if(sobrenome.isBlank()) "Digite um sobrenome por favor " else null
-                    nomeErrorMessage = if(nome.isBlank()) "Digite um nome por favor " else null
+                    nomeErrorMessage = if (nome.isBlank()) "Digite um nome" else null
                     telefoneErrorMessage = validarTelefone
-                    emailErrorMessage = if(email.isBlank()) "Digite um e-mail por favor " else validarEmail
+                    emailErrorMessage = if (email.isBlank()) "Digite um e-mail" else validarEmail
                     senhaErrorMessage = validarSenha
+                    cpfCnpjErrorMessage = if (cpfCnpj.isBlank()) "Digite o CPF/CNPJ" else null
+                    tipoErrorMessage = if (tipoUsuario.isBlank()) "Selecione o tipo de usuário" else null
 
-                    if(listOf(nomeErrorMessage, emailErrorMessage, senhaErrorMessage, sobrenomeErrorMessage, telefoneErrorMessage).all { it == null }) {
-                        val success = authViewModel.register(
-                            User(email, senha, nome, sobrenome, telefone)
+                    if (listOf(nomeErrorMessage, emailErrorMessage, senhaErrorMessage, telefoneErrorMessage, cpfCnpjErrorMessage, tipoErrorMessage).all { it == null }) {
+                        authViewModel.register(
+                            User(
+                                email = email,
+                                senha = senha,
+                                nome = nome,
+                                telefone = telefone,
+                                cpfCnpj = cpfCnpj,
+                                tipoUsuario = tipoUsuario
+                            )
                         )
-                        if (success) {
-                            navcontroller.navigate("login")
-                        } else {
-                            registrationErrorMessage = "Este e-mail já está cadastrado."
-                        }
                     }
-                },
-                text = stringResource(R.string.text_cadastrar),
-                singleLine = true
+                }
             )
+
+            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun ColumnRegisterPreview() {
-    RegisterComponents(navcontroller = rememberNavController(), authViewModel = AuthViewModel())
-}

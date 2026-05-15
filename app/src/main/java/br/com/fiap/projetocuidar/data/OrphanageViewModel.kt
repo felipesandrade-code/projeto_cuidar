@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import br.com.fiap.projetocuidar.data.network.ApiClient
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.launch
@@ -19,22 +20,63 @@ class OrphanageViewModel(app: Application) : AndroidViewModel(app) {
     val selectedLng = mutableStateOf<Double?>(null)
 
     val orphanages = mutableStateListOf<Orphanage>()
+    val isLoading = mutableStateOf(false)
+    val error = mutableStateOf<String?>(null)
 
     val selectedOrphanage = mutableStateOf<Orphanage?>(null)
     val selectedPlace = mutableStateOf<PlacePreview?>(null)
 
     private val storage = OrphanageStorage(
         app.applicationContext,
-        Moshi.Builder()
-            .add(KotlinJsonAdapterFactory())
-            .build()
+        Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
     )
 
-    init {
+    fun loadOrphanages() {
         viewModelScope.launch {
-            val saved = storage.load()
-            orphanages.clear()
-            orphanages.addAll(saved)
+            if (!ApiClient.hasToken()) {
+                val saved = storage.load()
+                if (saved.isNotEmpty()) {
+                    orphanages.clear()
+                    orphanages.addAll(saved)
+                }
+                return@launch
+            }
+            isLoading.value = true
+            error.value = null
+            try {
+                val list = ApiClient.api.getOrfanatos()
+                orphanages.clear()
+                orphanages.addAll(list.map { it.toOrphanage() })
+                storage.save(orphanages)
+            } catch (e: Exception) {
+                val saved = storage.load()
+                if (saved.isNotEmpty()) {
+                    orphanages.clear()
+                    orphanages.addAll(saved)
+                    error.value = "Usando dados em cache."
+                } else {
+                    error.value = "Sem conexão com o servidor."
+                }
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+
+    fun loadProximos(lat: Double, lng: Double, raio: Double = 10.0) {
+        viewModelScope.launch {
+            if (!ApiClient.hasToken()) return@launch
+            isLoading.value = true
+            error.value = null
+            try {
+                val list = ApiClient.api.getProximos(lat, lng, raio)
+                orphanages.clear()
+                orphanages.addAll(list.map { it.toOrphanage() })
+            } catch (e: Exception) {
+                error.value = "Erro ao carregar orfanatos próximos."
+            } finally {
+                isLoading.value = false
+            }
         }
     }
 
@@ -49,13 +91,16 @@ class OrphanageViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun add(orphanage: Orphanage) {
-        orphanages.add(0, orphanage)
-        persist()
-    }
-
-    private fun persist() {
         viewModelScope.launch {
-            storage.save(orphanages)
+            try {
+                val created = ApiClient.api.createOrfanato(orphanage.toApiModel())
+                orphanages.add(0, created.toOrphanage())
+                storage.save(orphanages)
+            } catch (e: Exception) {
+                orphanages.add(0, orphanage)
+                storage.save(orphanages)
+                error.value = "Salvo localmente. Sem conexão."
+            }
         }
     }
 
