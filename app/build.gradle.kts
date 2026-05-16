@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.androidx.appcompat.resources)
     implementation(libs.androidx.foundation)
+    implementation(libs.androidx.compose.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -83,10 +84,9 @@ dependencies {
     implementation("androidx.compose.ui:ui-text")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
-    implementation("com.squareup.moshi:moshi:1.15.1")
-    implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
 
     implementation(platform("com.google.firebase:firebase-bom:34.13.0"))
     implementation("com.google.firebase:firebase-analytics")
+
+    implementation("io.coil-kt:coil-compose:2.6.0")
     }

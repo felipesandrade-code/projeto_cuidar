@@ -94,7 +94,7 @@ interface ApiService {
 
     // Messages
     @POST("api/messages")
-    suspend fun sendMessage(@Body req: MessageRequest): MessageResponse
+    suspend fun sendMessage(@Body req: MessageRequest): List<MessageResponse>
 
     @GET("api/inbox/{clienteId}")
     suspend fun getInbox(
@@ -102,6 +102,9 @@ interface ApiService {
         @Query("page") page: Int = 0,
         @Query("size") size: Int = 20
     ): PagedMessages
+
+    @GET("api/messages/{id}")
+    suspend fun getMessageById(@Path("id") id: String): MessageResponse
 
     @PATCH("api/messages/{id}/status")
     suspend fun updateMessageStatus(@Path("id") id: String, @Body req: UpdateMessageStatusRequest)

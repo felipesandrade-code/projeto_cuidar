@@ -114,6 +114,21 @@ class OrphanageViewModel(app: Application) : AndroidViewModel(app) {
         selectedOrphanage.value = null
     }
 
+    fun delete(id: String) {
+        viewModelScope.launch {
+            try {
+                ApiClient.api.deleteOrfanato(id)
+                orphanages.removeAll { it.id == id }
+                storage.save(orphanages)
+                if (selectedOrphanage.value?.id == id) {
+                    selectedOrphanage.value = null
+                }
+            } catch (e: Exception) {
+                error.value = "Erro ao excluir: ${e.message}"
+            }
+        }
+    }
+
     class Factory(private val app: Application) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

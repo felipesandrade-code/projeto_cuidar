@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 data class User(
+    val id: String = "",
     val email: String,
     val senha: String = "",
     val nome: String = "",
@@ -32,6 +33,7 @@ sealed class AuthState {
 }
 
 private fun UserResponse.toUser() = User(
+    id = id,
     email = email,
     nome = nome,
     sobrenome = sobrenome,
@@ -54,7 +56,10 @@ class AuthViewModel(app: Application) : AndroidViewModel(app) {
             ApiClient.setToken(savedToken)
             try {
                 val response = ApiClient.api.me()
-                _currentUser.value = response.user.toUser()
+                val customType = tokenManager.getUserType()
+                _currentUser.value = response.user.toUser().copy(
+                    tipoUsuario = customType ?: response.user.role
+                )
             } catch (e: Exception) {
                 tokenManager.clear()
                 ApiClient.setToken(null)
@@ -68,8 +73,14 @@ class AuthViewModel(app: Application) : AndroidViewModel(app) {
             try {
                 val response = ApiClient.api.login(LoginRequest(email, senha))
                 ApiClient.setToken(response.token)
-                tokenManager.saveSession(response.token, response.user)
-                _currentUser.value = response.user.toUser()
+                
+                // No login, tentamos recuperar o tipo salvo anteriormente
+                val customType = tokenManager.getUserType()
+                tokenManager.saveSession(response.token, response.user, customType)
+                
+                _currentUser.value = response.user.toUser().copy(
+                    tipoUsuario = customType ?: response.user.role
+                )
                 _authState.value = AuthState.Success("home")
             } catch (e: Exception) {
                 _authState.value = AuthState.Error("E-mail ou senha incorretos.")
@@ -81,6 +92,12 @@ class AuthViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
             try {
+                android.util.Log.d("AUTH_DEBUG", "Iniciando registro para: ${user.email} como ${user.tipoUsuario}")
+                
+                // Revertendo para CLIENT para evitar o erro 500 no seu servidor
+                // O seu servidor parece aceitar apenas CLIENT na rota de registro
+                val backendRole = "CLIENT"
+
                 val response = ApiClient.api.register(
                     RegisterRequest(
                         nome = user.nome,
@@ -88,11 +105,15 @@ class AuthViewModel(app: Application) : AndroidViewModel(app) {
                         email = user.email,
                         senha = user.senha,
                         telefone = user.telefone.ifBlank { null },
-                        role = "CLIENT"
+                        role = backendRole
                     )
                 )
+                android.util.Log.d("AUTH_DEBUG", "Registro concluído com sucesso. Salvando tipo localmente: ${user.tipoUsuario}")
                 ApiClient.setToken(response.token)
-                tokenManager.saveSession(response.token, response.user)
+                
+                // Salvar o tipo de usuário (Orfanato, Voluntário, etc) localmente no celular
+                tokenManager.saveSession(response.token, response.user, user.tipoUsuario)
+                
                 _currentUser.value = response.user.toUser().copy(
                     cpfCnpj = user.cpfCnpj,
                     tipoUsuario = user.tipoUsuario,
@@ -101,10 +122,12 @@ class AuthViewModel(app: Application) : AndroidViewModel(app) {
                 val dest = when (user.tipoUsuario) {
                     "Doador" -> "registro_doador"
                     "Voluntário" -> "registro_voluntario"
+                    "Orfanato" -> "registerOng"
                     else -> "home"
                 }
                 _authState.value = AuthState.Success(dest)
             } catch (e: Exception) {
+                android.util.Log.e("AUTH_DEBUG", "Erro no registro: ${e.message}", e)
                 val msg = when {
                     e.message?.contains("409") == true -> "Este e-mail já está cadastrado."
                     e.message?.contains("400") == true -> "Dados inválidos. Verifique e tente novamente."

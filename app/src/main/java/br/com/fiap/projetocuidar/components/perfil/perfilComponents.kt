@@ -34,11 +34,13 @@ fun PerfilComponents(
     authViewModel: AuthViewModel
 ) {
     val currentUser by authViewModel.currentUser.collectAsState()
+    val isOrfanato = currentUser?.tipoUsuario?.lowercase() == "orfanato"
 
     var nome by remember { mutableStateOf(currentUser?.nome ?: "") }
     var email by remember { mutableStateOf(currentUser?.email ?: "") }
     var cpfCnpj by remember { mutableStateOf(currentUser?.cpfCnpj ?: "") }
     var senha by remember { mutableStateOf(currentUser?.senha ?: "") }
+    var telefone by remember { mutableStateOf(currentUser?.telefone ?: "") }
 
     var saved by remember { mutableStateOf(false) }
 
@@ -90,7 +92,7 @@ fun PerfilComponents(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        FormFieldLabel("Nome")
+        FormFieldLabel(if (isOrfanato) "Nome da Instituição" else "Nome")
         OutlinedTextField(
             value = nome,
             onValueChange = { nome = it },
@@ -114,13 +116,25 @@ fun PerfilComponents(
         )
         Spacer(modifier = Modifier.height(12.dp))
 
-        FormFieldLabel("CPF/CNPJ")
+        FormFieldLabel(if (isOrfanato) "CNPJ da Instituição" else "CPF/CNPJ")
         OutlinedTextField(
             value = cpfCnpj,
             onValueChange = { cpfCnpj = it },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            shape = RoundedCornerShape(12.dp),
+            colors = fieldColors
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+
+        FormFieldLabel(if (isOrfanato) "Telefone da Instituição" else "Telefone")
+        OutlinedTextField(
+            value = telefone,
+            onValueChange = { if (it.all { c -> c.isDigit() } && it.length <= 11) telefone = it },
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
             shape = RoundedCornerShape(12.dp),
             colors = fieldColors
         )
@@ -154,11 +168,12 @@ fun PerfilComponents(
                 currentUser?.let { user ->
                     authViewModel.updateUser(
                         User(
+                            id = user.id,
                             email = email,
                             senha = senha,
                             nome = nome,
                             sobrenome = user.sobrenome,
-                            telefone = user.telefone,
+                            telefone = telefone,
                             cpfCnpj = cpfCnpj,
                             tipoUsuario = user.tipoUsuario
                         )

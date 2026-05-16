@@ -1,5 +1,6 @@
 package br.com.fiap.projetocuidar.components.cadastroOrfanato
 
+import android.location.Geocoder
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -9,14 +10,18 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -24,17 +29,66 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import br.com.fiap.projetocuidar.R
 import br.com.fiap.projetocuidar.components.*
+import br.com.fiap.projetocuidar.data.AuthViewModel
 import br.com.fiap.projetocuidar.data.Orphanage
 import br.com.fiap.projetocuidar.data.OrphanageViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TimePickerDialogCustom(
+    onDismiss: () -> Unit,
+    onConfirm: (Int, Int) -> Unit
+) {
+    val state = rememberTimePickerState()
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = { onConfirm(state.hour, state.minute) }) { Text("Confirmar") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancelar") }
+        },
+        text = {
+            TimePicker(state = state)
+        }
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CadastroOngComponents(
     navController: NavController,
-    vm: OrphanageViewModel
+    vm: OrphanageViewModel,
+    authViewModel: AuthViewModel
 ) {
+    val currentUser by authViewModel.currentUser.collectAsState()
+    val verdePrimario = colorResource(R.color.cor_registre)
+    val context = LocalContext.current
+    val geocoder = remember { Geocoder(context) }
+    val scope = rememberCoroutineScope()
+    var isNavigating by remember { mutableStateOf(false) }
+
+    val currentUserId = currentUser?.id
+
     var nome by remember { mutableStateOf("") }
+    
+    // Categorias pré-estipuladas
+    var categoria by remember { mutableStateOf("") }
+    var categoriaExpanded by remember { mutableStateOf(false) }
+    val categoriasLista = listOf(
+        "Acolhimento Infantil",
+        "Centro de Reabilitação",
+        "Apoio ao Adolescente",
+        "Lar de Idosos",
+        "Educação Especial",
+        "Outros"
+    )
+
     var endereco by remember { mutableStateOf("") }
+    var isSearchingLocation by remember { mutableStateOf(false) }
     var sobre by remember { mutableStateOf("") }
     var telefone by remember { mutableStateOf("") }
     var foto by remember { mutableStateOf("") }
@@ -42,14 +96,30 @@ fun CadastroOngComponents(
     var instrucoes by remember { mutableStateOf("") }
     var horario by remember { mutableStateOf("") }
 
+    var horaAbertura by remember { mutableStateOf("08:00") }
+    var horaFechamento by remember { mutableStateOf("18:00") }
+    var showAberturaPicker by remember { mutableStateOf(false) }
+    var showFechamentoPicker by remember { mutableStateOf(false) }
+
+    LaunchedEffect(horaAbertura, horaFechamento) {
+        horario = "$horaAbertura às $horaFechamento"
+    }
+
+    val latSel by vm.selectedLat
+    val lngSel by vm.selectedLng
+
+    LaunchedEffect(currentUser) {
+        currentUser?.let {
+            if (nome.isBlank()) nome = it.nome
+            if (telefone.isBlank()) telefone = it.telefone
+        }
+    }
+
     var nomeError by remember { mutableStateOf<String?>(null) }
     var telefoneError by remember { mutableStateOf<String?>(null) }
     var instrucoesError by remember { mutableStateOf<String?>(null) }
     var horarioError by remember { mutableStateOf<String?>(null) }
     var locationError by remember { mutableStateOf<String?>(null) }
-
-    val latSel = vm.selectedLat.value
-    val lngSel = vm.selectedLng.value
 
     val fieldColors = OutlinedTextFieldDefaults.colors(
         focusedContainerColor = Color.White,
@@ -74,23 +144,80 @@ fun CadastroOngComponents(
         ) {
             Spacer(Modifier.height(16.dp))
 
-            // Título "Dados do orfanato"
             TituloComponents(Modifier, "Dados do orfanato", 25.sp)
             DividerComponent()
             Spacer(Modifier.height(16.dp))
 
-            // Localização
+            // BUSCA POR ENDEREÇO (Geocodificação)
+            FormFieldLabel("Localização (Digite o endereço)")
+            OutlinedTextField(
+                value = endereco,
+                onValueChange = { endereco = it },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                placeholder = { Text("Ex: Av. Paulista, 1000, São Paulo", color = Color.Gray, fontSize = 13.sp) },
+                trailingIcon = {
+                    if (isSearchingLocation) {
+                        CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
+                    } else {
+                        IconButton(onClick = {
+                            if (endereco.isNotBlank()) {
+                                isSearchingLocation = true
+                                scope.launch(Dispatchers.IO) {
+                                    try {
+                                        val results = geocoder.getFromLocationName(endereco, 1)
+                                        withContext(Dispatchers.Main) {
+                                            if (!results.isNullOrEmpty()) {
+                                                val loc = results[0]
+                                                vm.setSelected(loc.latitude, loc.longitude)
+                                                locationError = null
+                                            } else {
+                                                locationError = "Endereço não encontrado."
+                                            }
+                                            isSearchingLocation = false
+                                        }
+                                    } catch (e: Exception) {
+                                        withContext(Dispatchers.Main) {
+                                            locationError = "Erro na busca. Verifique a conexão."
+                                            isSearchingLocation = false
+                                        }
+                                    }
+                                }
+                            }
+                        }) {
+                            Icon(Icons.Default.Search, contentDescription = "Buscar coordenadas", tint = verdePrimario)
+                        }
+                    }
+                },
+                shape = RoundedCornerShape(12.dp),
+                colors = fieldColors
+            )
+            
+            Spacer(Modifier.height(8.dp))
+
             if (latSel == null || lngSel == null) {
                 locationError?.let {
                     Text(
                         text = it,
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(start = 20.dp, top = 4.dp, bottom = 4.dp)
+                        modifier = Modifier.padding(start = 20.dp, bottom = 4.dp)
                     )
                 }
                 Button(
-                    onClick = { locationError = null; navController.navigate("map_select") },
+                    onClick = { 
+                        if (!isNavigating) {
+                            isNavigating = true
+                            locationError = null
+                            try {
+                                android.util.Log.d("MAP_CLICK", "Botão de mapa clicado. Navegando para map_select")
+                                navController.navigate("map_select")
+                            } catch (e: Exception) {
+                                android.util.Log.e("MAP_CLICK", "Falha crítica ao navegar: ${e.message}")
+                                locationError = "Erro ao abrir o mapa. Tente novamente."
+                                isNavigating = false
+                            }
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp)
@@ -99,7 +226,7 @@ fun CadastroOngComponents(
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.cor_card_footer))
                 ) {
                     Icon(Icons.Default.LocationOn, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
-                    Text("Escolher localização no mapa")
+                    Text("Ou escolher no mapa manual")
                 }
             } else {
                 Row(
@@ -110,12 +237,17 @@ fun CadastroOngComponents(
                 ) {
                     AssistChip(
                         onClick = { },
-                        label = { Text("Lat: %.5f, Lng: %.5f".format(latSel, lngSel)) },
-                        leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
+                        label = { Text("Local definido: %.4f, %.4f".format(latSel, lngSel)) },
+                        leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null, tint = verdePrimario) },
                         modifier = Modifier.weight(1f).padding(end = 8.dp)
                     )
                     TextButton(
-                        onClick = { navController.navigate("map_select") },
+                        onClick = { 
+                            if (!isNavigating) {
+                                isNavigating = true
+                                navController.navigate("map_select") 
+                            }
+                        },
                         modifier = Modifier.clip(CircleShape)
                     ) { Text("Alterar") }
                 }
@@ -138,17 +270,38 @@ fun CadastroOngComponents(
             nomeError?.let { Text("Campo Nome vazio", color = MaterialTheme.colorScheme.error, fontSize = 12.sp, modifier = Modifier.padding(start = 24.dp, top = 2.dp)) }
             Spacer(Modifier.height(12.dp))
 
-            FormFieldLabel("Endereço")
-            OutlinedTextField(
-                value = endereco,
-                onValueChange = { endereco = it },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-                placeholder = { Text("Digite o endereço do orfanato", color = Color.Gray, fontSize = 14.sp) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, capitalization = KeyboardCapitalization.Words),
-                shape = RoundedCornerShape(12.dp),
-                colors = fieldColors
-            )
+            // CATEGORIA COM SELECT (DROPDOWN)
+            FormFieldLabel("Categoria")
+            ExposedDropdownMenuBox(
+                expanded = categoriaExpanded,
+                onExpandedChange = { categoriaExpanded = !categoriaExpanded },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
+            ) {
+                OutlinedTextField(
+                    value = categoria,
+                    onValueChange = {},
+                    readOnly = true,
+                    placeholder = { Text("Selecione a categoria", color = Color.Gray, fontSize = 14.sp) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoriaExpanded) },
+                    modifier = Modifier.fillMaxWidth().menuAnchor(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = fieldColors
+                )
+                ExposedDropdownMenu(
+                    expanded = categoriaExpanded,
+                    onDismissRequest = { categoriaExpanded = false }
+                ) {
+                    categoriasLista.forEach { item ->
+                        DropdownMenuItem(
+                            text = { Text(item, fontFamily = FontFamily(Font(R.font.nunito_regular))) },
+                            onClick = {
+                                categoria = item
+                                categoriaExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
             Spacer(Modifier.height(12.dp))
 
             FormFieldLabel("Sobre")
@@ -191,7 +344,6 @@ fun CadastroOngComponents(
 
             Spacer(Modifier.height(20.dp))
 
-            // Seção Visitação
             TituloComponents(Modifier, "Visitação", 25.sp)
             DividerComponent()
             Spacer(Modifier.height(16.dp))
@@ -211,18 +363,49 @@ fun CadastroOngComponents(
             Spacer(Modifier.height(12.dp))
 
             FormFieldLabel("Horário das visitas")
-            OutlinedTextField(
-                value = horario,
-                onValueChange = { horario = it },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-                placeholder = { Text("Digite os horários disponíveis para visitas", color = Color.Gray, fontSize = 14.sp) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, capitalization = KeyboardCapitalization.Words),
-                shape = RoundedCornerShape(12.dp),
-                colors = fieldColors,
-                isError = horarioError != null
-            )
-            horarioError?.let { Text("Campo Horário vazio", color = MaterialTheme.colorScheme.error, fontSize = 12.sp, modifier = Modifier.padding(start = 24.dp, top = 2.dp)) }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedButton(
+                    onClick = { showAberturaPicker = true },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = verdePrimario)
+                ) {
+                    Text("Abre: $horaAbertura")
+                }
+                OutlinedButton(
+                    onClick = { showFechamentoPicker = true },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = verdePrimario)
+                ) {
+                    Text("Fecha: $horaFechamento")
+                }
+            }
+
+            if (showAberturaPicker) {
+                TimePickerDialogCustom(
+                    onDismiss = { showAberturaPicker = false },
+                    onConfirm = { h, m ->
+                        horaAbertura = "%02d:%02d".format(h, m)
+                        showAberturaPicker = false
+                    }
+                )
+            }
+            if (showFechamentoPicker) {
+                TimePickerDialogCustom(
+                    onDismiss = { showFechamentoPicker = false },
+                    onConfirm = { h, m ->
+                        horaFechamento = "%02d:%02d".format(h, m)
+                        showFechamentoPicker = false
+                    }
+                )
+            }
+
             Spacer(Modifier.height(8.dp))
 
             Row(
@@ -252,14 +435,14 @@ fun CadastroOngComponents(
                     telefoneError = if (telefone.isBlank()) "err" else null
                     instrucoesError = if (instrucoes.isBlank()) "err" else null
                     horarioError = if (horario.isBlank()) "err" else null
-                    locationError = if (latSel == null || lngSel == null) "Selecione a localização no mapa" else null
+                    locationError = if (latSel == null || lngSel == null) "Selecione a localização no mapa ou busque por endereço" else null
 
                     val allOk = listOf(nomeError, telefoneError, instrucoesError, horarioError, locationError).all { it == null }
                     if (allOk) {
                         vm.add(
                             Orphanage(
                                 nome = nome,
-                                categoria = endereco.ifBlank { "Geral" },
+                                categoria = categoria.ifBlank { "Geral" },
                                 telefone = telefone,
                                 sobre = sobre.ifBlank { null },
                                 fotoUrl = foto.ifBlank { null },
@@ -267,7 +450,8 @@ fun CadastroOngComponents(
                                 horarioVisita = horario,
                                 fimDeSemana = fimDeSemana,
                                 lat = latSel!!,
-                                lng = lngSel!!
+                                lng = lngSel!!,
+                                createdBy = currentUserId
                             )
                         )
                         vm.clearSelected()

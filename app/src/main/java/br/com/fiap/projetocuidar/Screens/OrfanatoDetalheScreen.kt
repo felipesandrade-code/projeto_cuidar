@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -21,10 +23,14 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import br.com.fiap.projetocuidar.R
 import br.com.fiap.projetocuidar.components.*
 import br.com.fiap.projetocuidar.data.OrphanageViewModel
+import coil.compose.AsyncImage
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -37,6 +43,16 @@ fun OrfanatoDetalheScreen(
     navController: NavController,
     vm: OrphanageViewModel
 ) {
+    val professionalPhotos = listOf(
+        "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1547038570-cb419a4e030a?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?q=80&w=800&auto=format&fit=crop",
+        "https://images.pexels.com/photos/35250445/pexels-photo-35250445.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "https://images.pexels.com/photos/7100693/pexels-photo-7100693.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "https://images.unsplash.com/photo-1524062734623-a26062363660?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1459183885447-df88d1f7124f?q=80&w=800&auto=format&fit=crop"
+    )
+
     val local = vm.selectedOrphanage.value
     val place = vm.selectedPlace.value
 
@@ -49,6 +65,8 @@ fun OrfanatoDetalheScreen(
     val instrucao = local?.instrucaoVisita ?: ""
     val horario = local?.horarioVisita ?: ""
     val fimDeSemana = local?.fimDeSemana ?: false
+
+    val context = LocalContext.current
 
     val verdePrimario = colorResource(R.color.cor_registre)
     val verdeSecundario = colorResource(R.color.cor_card_footer)
@@ -67,8 +85,12 @@ fun OrfanatoDetalheScreen(
                 .fillMaxWidth()
                 .height(220.dp)
         ) {
-            Image(
-                painter = painterResource(R.drawable.orfanato3),
+            val seed = (local?.id ?: local?.nome ?: "default").hashCode()
+            val photoUrl = local?.fotoUrl ?: professionalPhotos[2 + (Math.abs(seed) % (professionalPhotos.size - 2))]
+            AsyncImage(
+                model = photoUrl,
+                error = painterResource(R.drawable.orfanato3),
+                placeholder = painterResource(R.drawable.orfanato3),
                 contentDescription = nome,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
@@ -125,10 +147,31 @@ fun OrfanatoDetalheScreen(
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-        ButtonVerMapa()
-        Spacer(modifier = Modifier.height(20.dp))
 
-        // Instruções para visita
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Button(
+                onClick = {
+                    val gmmIntentUri = Uri.parse("google.navigation:q=$lat,$lng")
+                    val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                    mapIntent.setPackage("com.google.android.apps.maps")
+                    context.startActivity(mapIntent)
+                },
+                modifier = Modifier.width(300.dp),
+                shape = RoundedCornerShape(5.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.cor_ver_mapa)),
+            ) {
+                Text(
+                    text = "Ver rotas no Google Maps",
+                    textAlign = TextAlign.Center,
+                    color = colorResource(R.color.cor_texto_ver_mapa),
+                    fontFamily = FontFamily(Font(R.font.nunito_bold)),
+                    fontSize = 12.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
         Text(
             text = "Instruções para visita",
             fontFamily = FontFamily(Font(R.font.nunito_bold)),
@@ -136,7 +179,7 @@ fun OrfanatoDetalheScreen(
             color = verdePrimario,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         if (instrucao.isNotBlank()) {
             Text(
                 text = instrucao,
@@ -145,10 +188,18 @@ fun OrfanatoDetalheScreen(
                 color = colorResource(R.color.texto_orfanato),
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
+        } else {
+            Text(
+                text = "Nenhuma instrução específica fornecida.",
+                fontFamily = FontFamily(Font(R.font.nunito_semibold)),
+                fontSize = 14.sp,
+                color = colorResource(R.color.texto_orfanato).copy(alpha = 0.6f),
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
         }
-        Spacer(modifier = Modifier.height(20.dp))
+        
+        Spacer(modifier = Modifier.height(24.dp))
 
-        // Cards de horário e fim de semana
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier
@@ -176,12 +227,18 @@ fun OrfanatoDetalheScreen(
         }
 
         Spacer(modifier = Modifier.height(24.dp))
+// Botão entrar em contato
+PrimaryButton(
+    text = if (telefone == "—") "Sem contato cadastrado" else "Entrar em contato",
+    onClick = {
+        val id = local?.id
+        val name = local?.nome
+        if (!id.isNullOrBlank() && !name.isNullOrBlank()) {
+            navController.navigate("chat/$id/$name")
+        }
+    }
+)
 
-        // Botão entrar em contato
-        PrimaryButton(
-            text = if (telefone == "—") "Sem contato cadastrado" else "Entrar em contato",
-            onClick = { }
-        )
 
         Spacer(modifier = Modifier.height(32.dp))
     }

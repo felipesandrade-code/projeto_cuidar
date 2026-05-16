@@ -7,12 +7,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import br.com.fiap.projetocuidar.components.cadastroOrfanato.CadastroOngComponents
+import br.com.fiap.projetocuidar.data.AuthViewModel
 import br.com.fiap.projetocuidar.data.OrphanageViewModel
 
 
 @Composable
-fun CadastroOngScreen(navController: NavController, vm: OrphanageViewModel) {
-    CadastroOngComponents(navController = navController, vm)
+fun CadastroOngScreen(navController: NavController, vm: OrphanageViewModel, authViewModel: AuthViewModel) {
+    CadastroOngComponents(navController = navController, vm, authViewModel)
 }
 
 @Preview (showBackground = true, showSystemUi = true)
@@ -20,6 +21,7 @@ fun CadastroOngScreen(navController: NavController, vm: OrphanageViewModel) {
 private fun CadastroOngScreenPreview() {
     val app = LocalContext.current.applicationContext as Application
     val vm: OrphanageViewModel = viewModel (factory = OrphanageViewModel.Factory(app))
+    val authVm: AuthViewModel = viewModel (factory = AuthViewModel.Factory(app))
 
-    CadastroOngScreen(navController = NavController(LocalContext.current), vm)
+    CadastroOngScreen(navController = NavController(LocalContext.current), vm, authVm)
 }

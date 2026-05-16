@@ -18,14 +18,17 @@ import br.com.fiap.projetocuidar.Screens.MapaSelectScreen
 import br.com.fiap.projetocuidar.Screens.OrfanatoDetalheScreen
 import br.com.fiap.projetocuidar.Screens.PerfilScreen
 import br.com.fiap.projetocuidar.Screens.RegistroUsuarioScreen
+import br.com.fiap.projetocuidar.Screens.ChatScreen
 import br.com.fiap.projetocuidar.data.AuthViewModel
 import br.com.fiap.projetocuidar.data.OrphanageViewModel
+import br.com.fiap.projetocuidar.data.MessageViewModel
 
 @Composable
 fun AppNavHost(playServicesOk: Boolean) {
     val app = LocalContext.current.applicationContext as Application
     val vm: OrphanageViewModel = viewModel(factory = OrphanageViewModel.Factory(app))
     val authVm: AuthViewModel = viewModel(factory = AuthViewModel.Factory(app))
+    val messageVm: MessageViewModel = viewModel()
 
     val nav = androidx.navigation.compose.rememberNavController()
 
@@ -40,7 +43,12 @@ fun AppNavHost(playServicesOk: Boolean) {
         composable("inscricao") { InscricaoScreen(nav, vm) }
         composable("mapa") { MapaScreen(nav, vm) }
         composable("map_select") { MapaSelectScreen(nav, vm) }
-        composable("registerOng") { CadastroOngScreen(nav, vm) }
+        composable("registerOng") { CadastroOngScreen(nav, vm, authVm) }
         composable("ong_detail") { OrfanatoDetalheScreen(nav, vm) }
+        composable("chat/{orphanageId}/{orphanageName}") { backStackEntry ->
+            val orphanageId = backStackEntry.arguments?.getString("orphanageId") ?: ""
+            val orphanageName = backStackEntry.arguments?.getString("orphanageName") ?: ""
+            ChatScreen(nav, orphanageId, orphanageName, authVm, messageVm)
+        }
     }
 }

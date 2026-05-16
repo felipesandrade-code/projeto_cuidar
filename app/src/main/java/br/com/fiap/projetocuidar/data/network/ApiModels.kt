@@ -34,7 +34,9 @@ data class OrphanageApiModel(
     val fimDeSemana: Boolean = false,
     val lat: Double,
     val lng: Double,
+    val createdBy: String? = null,
     val createdAt: String? = null,
+    val updatedAt: String? = null,
     val distanciaKm: Double? = null
 )
 

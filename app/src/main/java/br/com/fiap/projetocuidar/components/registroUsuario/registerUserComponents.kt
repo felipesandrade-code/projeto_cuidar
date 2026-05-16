@@ -46,6 +46,7 @@ import br.com.fiap.projetocuidar.components.TituloComponents
 import br.com.fiap.projetocuidar.data.AuthState
 import br.com.fiap.projetocuidar.data.AuthViewModel
 import br.com.fiap.projetocuidar.data.User
+import br.com.fiap.projetocuidar.util.CpfCnpjVisualTransformation
 import br.com.fiap.projetocuidar.util.TelefoneVisualTransformation
 import br.com.fiap.projetocuidar.validateSenha
 import br.com.fiap.projetocuidar.validateTelefone
@@ -96,7 +97,7 @@ fun RegisterComponents(
     val validarSenha = validateSenha(senha)
     val validarTelefone = validateTelefone(telefone)
 
-    val tipoOptions = listOf("Voluntário", "Doador")
+    val tipoOptions = listOf("Voluntário", "Doador", "Orfanato")
 
     val fieldColors = OutlinedTextFieldDefaults.colors(
         focusedContainerColor = Color.White,
@@ -206,14 +207,15 @@ fun RegisterComponents(
             FormFieldLabel("CPF/CNPJ")
             OutlinedTextField(
                 value = cpfCnpj,
-                onValueChange = { cpfCnpj = it },
+                onValueChange = { if (it.all { c -> c.isDigit() } && it.length <= 14) cpfCnpj = it },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
                 placeholder = { Text("Digite o seu cpf/cnpj", color = Color.Gray, fontSize = 14.sp) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 shape = RoundedCornerShape(12.dp),
                 colors = fieldColors,
-                isError = cpfCnpjErrorMessage != null
+                isError = cpfCnpjErrorMessage != null,
+                visualTransformation = CpfCnpjVisualTransformation()
             )
             cpfCnpjErrorMessage?.let {
                 Text(it, color = Color.Red, fontSize = 11.sp, modifier = Modifier.padding(start = 24.dp, top = 2.dp))
@@ -231,7 +233,7 @@ fun RegisterComponents(
                     onValueChange = {},
                     readOnly = true,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = tipoExpanded) },
-                    placeholder = { Text("Selecione se você é voluntário ou doador", color = Color.Gray, fontSize = 13.sp) },
+                    placeholder = { Text("Selecione se você é voluntário, doador ou orfanato", color = Color.Gray, fontSize = 13.sp) },
                     modifier = Modifier.fillMaxWidth().menuAnchor(),
                     shape = RoundedCornerShape(12.dp),
                     colors = fieldColors,

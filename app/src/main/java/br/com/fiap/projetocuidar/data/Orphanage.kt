@@ -14,6 +14,7 @@ data class Orphanage(
     val fimDeSemana: Boolean,
     val lat: Double,
     val lng: Double,
+    val createdBy: String? = null,
     val createdAt: String? = null,
     val distanciaKm: Double? = null
 )
@@ -30,6 +31,7 @@ fun OrphanageApiModel.toOrphanage() = Orphanage(
     fimDeSemana = fimDeSemana,
     lat = lat,
     lng = lng,
+    createdBy = createdBy,
     createdAt = createdAt,
     distanciaKm = distanciaKm
 )
@@ -45,5 +47,6 @@ fun Orphanage.toApiModel() = OrphanageApiModel(
     horarioVisita = horarioVisita,
     fimDeSemana = fimDeSemana,
     lat = lat,
-    lng = lng
+    lng = lng,
+    createdBy = createdBy
 )

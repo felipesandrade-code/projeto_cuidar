@@ -25,6 +25,10 @@ class MessageViewModel : ViewModel() {
     private val _sendState = MutableStateFlow<String?>(null)
     val sendState: StateFlow<String?> = _sendState
 
+    // Lista em memória para garantir que mensagens enviadas nesta sessão apareçam
+    private val _sessionMessages = MutableStateFlow<List<MessageResponse>>(emptyList())
+    val sessionMessages: StateFlow<List<MessageResponse>> = _sessionMessages
+
     fun loadInbox(clienteId: String, page: Int = 0) {
         _state.value = MessageUiState.Loading
         viewModelScope.launch {
@@ -32,7 +36,7 @@ class MessageViewModel : ViewModel() {
                 val paged = ApiClient.api.getInbox(clienteId, page)
                 _state.value = MessageUiState.Success(paged.content)
             } catch (e: Exception) {
-                _state.value = MessageUiState.Error("Erro ao carregar mensagens.")
+                _state.value = MessageUiState.Error("Erro ao carregar mensagens: ${e.message}")
             }
         }
     }
@@ -40,9 +44,30 @@ class MessageViewModel : ViewModel() {
     fun sendMessage(destinatario: String? = null, segmentoId: String? = null, tipo: String = "TEXT", conteudo: String) {
         viewModelScope.launch {
             try {
-                ApiClient.api.sendMessage(MessageRequest(destinatario, segmentoId, tipo, conteudo))
-                _sendState.value = "Mensagem enviada com sucesso."
+                android.util.Log.d("CHAT_DEBUG", "Enviando para: $destinatario, Conteudo: $conteudo")
+                val responseList = ApiClient.api.sendMessage(MessageRequest(destinatario, segmentoId, tipo, conteudo))
+                
+                // O servidor retorna uma lista, pegamos a primeira mensagem enviada
+                val lastSentMessage = responseList.firstOrNull()
+                
+                if (lastSentMessage != null) {
+                    android.util.Log.d("CHAT_DEBUG", "Sucesso: ${lastSentMessage.id}")
+                    _sendState.value = "Mensagem enviada com sucesso."
+                    
+                    // Adicionar à lista da sessão imediatamente
+                    _sessionMessages.value = listOf(lastSentMessage) + _sessionMessages.value
+                    
+                    // Atualizar o estado principal para forçar recomposição
+                    val currentState = _state.value
+                    if (currentState is MessageUiState.Success) {
+                        val updatedList = (listOf(lastSentMessage) + currentState.messages).distinctBy { it.id }
+                        _state.value = MessageUiState.Success(updatedList)
+                    } else {
+                        _state.value = MessageUiState.Success(listOf(lastSentMessage))
+                    }
+                }
             } catch (e: Exception) {
+                android.util.Log.e("CHAT_DEBUG", "Erro ao enviar: ${e.message}")
                 _sendState.value = "Erro ao enviar mensagem."
             }
         }

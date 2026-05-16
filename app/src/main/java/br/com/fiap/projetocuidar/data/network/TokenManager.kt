@@ -20,9 +20,10 @@ class TokenManager(private val context: Context) {
         private val KEY_USER_NOME = stringPreferencesKey("user_nome")
         private val KEY_USER_SOBRENOME = stringPreferencesKey("user_sobrenome")
         private val KEY_USER_ROLE = stringPreferencesKey("user_role")
+        private val KEY_USER_TYPE = stringPreferencesKey("user_type")
     }
 
-    suspend fun saveSession(token: String, user: UserResponse) {
+    suspend fun saveSession(token: String, user: UserResponse, customType: String? = null) {
         context.authDataStore.edit { prefs ->
             prefs[KEY_TOKEN] = token
             prefs[KEY_USER_ID] = user.id
@@ -30,8 +31,14 @@ class TokenManager(private val context: Context) {
             prefs[KEY_USER_NOME] = user.nome
             prefs[KEY_USER_SOBRENOME] = user.sobrenome
             prefs[KEY_USER_ROLE] = user.role
+            if (customType != null) {
+                prefs[KEY_USER_TYPE] = customType
+            }
         }
     }
+
+    suspend fun getUserType(): String? =
+        context.authDataStore.data.map { it[KEY_USER_TYPE] }.first()
 
     suspend fun getToken(): String? =
         context.authDataStore.data.map { it[KEY_TOKEN] }.first()

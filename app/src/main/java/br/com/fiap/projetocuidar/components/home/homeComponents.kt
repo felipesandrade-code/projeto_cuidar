@@ -1,50 +1,22 @@
 package br.com.fiap.projetocuidar.components.home
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -58,6 +30,7 @@ import br.com.fiap.projetocuidar.R
 import br.com.fiap.projetocuidar.components.LogoComponent
 import br.com.fiap.projetocuidar.data.AuthViewModel
 import br.com.fiap.projetocuidar.data.OrphanageViewModel
+import coil.compose.AsyncImage
 
 @Composable
 fun HomeComponents(
@@ -66,11 +39,22 @@ fun HomeComponents(
     authViewModel: AuthViewModel,
     orphanageViewModel: OrphanageViewModel
 ) {
+    val professionalPhotos = listOf(
+        "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=800&auto=format&fit=crop", // 0: Crianças sinal de paz
+        "https://images.unsplash.com/photo-1547038570-cb419a4e030a?q=80&w=800&auto=format&fit=crop", // 1: Menino e menina comendo
+        "https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?q=80&w=800&auto=format&fit=crop", // 2: Grupo de voluntárias
+        "https://images.pexels.com/photos/35250445/pexels-photo-35250445.jpeg?auto=compress&cs=tinysrgb&w=800", // 3: Crianças copos coloridos
+        "https://images.pexels.com/photos/7100693/pexels-photo-7100693.jpeg?auto=compress&cs=tinysrgb&w=800", // 4: Crianças sob coqueiro
+        "https://images.unsplash.com/photo-1524062734623-a26062363660?q=80&w=800&auto=format&fit=crop", // 5: Quatro crianças terra
+        "https://images.unsplash.com/photo-1459183885447-df88d1f7124f?q=80&w=800&auto=format&fit=crop" // 6: Grupo mochilas laranjas
+    )
+
     var menuExpanded by remember { mutableStateOf(false) }
     val currentUser by authViewModel.currentUser.collectAsState()
     val orphanages = orphanageViewModel.orphanages
     val tipoUsuario = currentUser?.tipoUsuario?.lowercase() ?: ""
-    val isVoluntario = tipoUsuario == "voluntário"
+    val isVoluntario = tipoUsuario.contains("voluntário") || tipoUsuario.contains("voluntario")
+    val isOrfanato = tipoUsuario.contains("orfanato") || tipoUsuario.contains("ong")
 
     val verdePrimario = colorResource(R.color.cor_registre)
     val verdeSecundario = colorResource(R.color.cor_card_footer)
@@ -111,6 +95,20 @@ fun HomeComponents(
                         onClick = { navController.navigate("mapa") },
                         icon = { Icon(Icons.Filled.Map, contentDescription = "Mapa", modifier = Modifier.size(24.dp)) },
                         label = { Text("Mapa", fontSize = 11.sp, fontFamily = FontFamily(Font(R.font.nunito_regular))) },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = verdePrimario,
+                            unselectedIconColor = colorResource(R.color.cor_text_login),
+                            selectedTextColor = verdePrimario,
+                            unselectedTextColor = colorResource(R.color.cor_text_login),
+                            indicatorColor = colorResource(R.color.cor_column_registre)
+                        )
+                    )
+                } else if (isOrfanato) {
+                    NavigationBarItem(
+                        selected = false,
+                        onClick = { /* Navegar para mensagens recebidas */ },
+                        icon = { Icon(Icons.Filled.Mail, contentDescription = "Mensagens", modifier = Modifier.size(24.dp)) },
+                        label = { Text("Mensagens", fontSize = 11.sp, fontFamily = FontFamily(Font(R.font.nunito_regular))) },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = verdePrimario,
                             unselectedIconColor = colorResource(R.color.cor_text_login),
@@ -184,6 +182,11 @@ fun HomeComponents(
                                 text = { Text("Inscrição voluntariado") },
                                 onClick = { menuExpanded = false; navController.navigate("inscricao") }
                             )
+                        } else if (isOrfanato) {
+                            DropdownMenuItem(
+                                text = { Text("Editar dados da ONG") },
+                                onClick = { menuExpanded = false; navController.navigate("registerOng") }
+                            )
                         } else {
                             DropdownMenuItem(
                                 text = { Text("Fazer doação") },
@@ -202,8 +205,12 @@ fun HomeComponents(
                 }
             }
 
-            // Seção: Notícias / Tarefas
-            val secaoTitulo = if (isVoluntario) "Tarefas" else "Notícias"
+            // Seção: Notícias / Gestão
+            val secaoTitulo = when {
+                isVoluntario -> "Tarefas"
+                isOrfanato -> "Minha Gestão"
+                else -> "Notícias"
+            }
             Text(
                 text = secaoTitulo,
                 fontSize = 18.sp,
@@ -225,8 +232,10 @@ fun HomeComponents(
                             .height(120.dp)
                     ) {
                         Box(modifier = Modifier.fillMaxSize()) {
-                            Image(
-                                painter = painterResource(R.drawable.orfanato3),
+                            AsyncImage(
+                                model = professionalPhotos[index % professionalPhotos.size],
+                                error = painterResource(R.drawable.orfanato3),
+                                placeholder = painterResource(R.drawable.orfanato3),
                                 contentDescription = null,
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop
@@ -239,9 +248,11 @@ fun HomeComponents(
                                     .padding(horizontal = 8.dp, vertical = 6.dp)
                             ) {
                                 Text(
-                                    text = if (isVoluntario) {
-                                        if (index == 0) "Dar aula de artes" else "Ajudar na educação"
-                                    } else "Ver notícia",
+                                    text = when {
+                                        isVoluntario -> if (index == 0) "Dar aula de artes" else "Ajudar na educação"
+                                        isOrfanato -> if (index == 0) "Estatísticas da ONG" else "Mensagens pendentes"
+                                        else -> "Ver notícia"
+                                    },
                                     color = Color.White,
                                     fontSize = 12.sp,
                                     fontFamily = FontFamily(Font(R.font.nunito_semibold))
@@ -254,8 +265,86 @@ fun HomeComponents(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Seção: Orfanatos
-            val orfanatosTitulo = if (isVoluntario) "Orfanatos atrelados a mim" else "Orfanatos próximos"
+            // Dashboard do Orfanato (se for o caso)
+            if (isOrfanato) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Card(
+                            modifier = Modifier.weight(1f),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text("Doações (Mês)", fontSize = 12.sp, color = Color.Gray)
+                                Text("R$ 1.250,00", fontSize = 16.sp, fontFamily = FontFamily(Font(R.font.nunito_bold)), color = verdePrimario)
+                            }
+                        }
+                        Card(
+                            modifier = Modifier.weight(1f),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text("Novos Itens", fontSize = 12.sp, color = Color.Gray)
+                                Text("24 unidades", fontSize = 16.sp, fontFamily = FontFamily(Font(R.font.nunito_bold)), color = verdePrimario)
+                            }
+                        }
+                    }
+
+                    Spacer(Modifier.height(16.dp))
+
+                    Text(
+                        "Últimas Atividades",
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.nunito_bold)),
+                        color = verdePrimario,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    val atividades = listOf(
+                        "João Silva enviou uma mensagem",
+                        "Doação registrada: 5kg de Arroz",
+                        "Nova oferta de voluntariado: Maria Souza",
+                        "Doação registrada: R$ 50,00"
+                    )
+
+                    atividades.forEach { atividade ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.History,
+                                    contentDescription = null,
+                                    tint = verdePrimario,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(Modifier.width(12.dp))
+                                Text(
+                                    text = atividade,
+                                    fontSize = 13.sp,
+                                    fontFamily = FontFamily(Font(R.font.nunito_regular))
+                                )
+                            }
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
+
+            // Seção: Lista de Orfanatos / Meus Registros
+            val orfanatosTitulo = if (isOrfanato) "Meus Registros" else if (isVoluntario) "Orfanatos atrelados a mim" else "Orfanatos próximos"
             Text(
                 text = orfanatosTitulo,
                 fontSize = 18.sp,
@@ -266,7 +355,7 @@ fun HomeComponents(
 
             if (orphanages.isEmpty()) {
                 Text(
-                    text = "Nenhum orfanato cadastrado ainda.",
+                    text = "Nenhum registro encontrado.",
                     color = colorResource(R.color.cor_text_login),
                     fontSize = 14.sp,
                     fontFamily = FontFamily(Font(R.font.nunito_regular)),
@@ -280,7 +369,7 @@ fun HomeComponents(
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 6.dp)
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
                             .clickable {
                                 orphanageViewModel.selectOrphanageForDetail(o)
                                 navController.navigate("ong_detail")
@@ -295,14 +384,38 @@ fun HomeComponents(
                                 color = verdePrimario
                             )
                             Box {
-                                Image(
-                                    painter = painterResource(R.drawable.orfanato3),
+                                val seed = o.id.ifBlank { o.nome }.hashCode()
+                                val photoUrl = o.fotoUrl ?: professionalPhotos[2 + (Math.abs(seed) % (professionalPhotos.size - 2))]
+                                AsyncImage(
+                                    model = photoUrl,
+                                    error = painterResource(R.drawable.orfanato3),
+                                    placeholder = painterResource(R.drawable.orfanato3),
                                     contentDescription = o.nome,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(190.dp),
                                     contentScale = ContentScale.Crop
                                 )
+
+                                // Botão de Excluir visível apenas para usuários Orfanato
+                                if (isOrfanato) {
+                                    IconButton(
+                                        onClick = { orphanageViewModel.delete(o.id) },
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .padding(8.dp)
+                                            .background(Color.White.copy(alpha = 0.8f), CircleShape)
+                                            .size(36.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Delete,
+                                            contentDescription = "Excluir",
+                                            tint = Color.Red,
+                                            modifier = Modifier.size(22.dp)
+                                        )
+                                    }
+                                }
+
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -311,7 +424,7 @@ fun HomeComponents(
                                         .padding(vertical = 8.dp)
                                 ) {
                                     Text(
-                                        text = "Saiba mais",
+                                        text = "Ver detalhes",
                                         color = Color.White,
                                         fontSize = 13.sp,
                                         fontFamily = FontFamily(Font(R.font.nunito_semibold)),
