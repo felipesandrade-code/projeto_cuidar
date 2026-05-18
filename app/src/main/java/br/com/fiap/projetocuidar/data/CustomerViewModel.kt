@@ -33,8 +33,15 @@ class CustomerViewModel : ViewModel() {
     private val _timelineState = MutableStateFlow<TimelineState>(TimelineState.Idle)
     val timelineState: StateFlow<TimelineState> = _timelineState
 
+    private val _selectedCustomer = MutableStateFlow<CustomerResponse?>(null)
+    val selectedCustomer: StateFlow<CustomerResponse?> = _selectedCustomer
+
     private val _actionMessage = MutableStateFlow<String?>(null)
     val actionMessage: StateFlow<String?> = _actionMessage
+
+    fun selectCustomer(customer: CustomerResponse) {
+        _selectedCustomer.value = customer
+    }
 
     fun loadCustomers(
         search: String? = null,

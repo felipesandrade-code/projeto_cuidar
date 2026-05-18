@@ -231,10 +231,11 @@ fun OrfanatoDetalheScreen(
 PrimaryButton(
     text = if (telefone == "—") "Sem contato cadastrado" else "Entrar em contato",
     onClick = {
-        val id = local?.id
-        val name = local?.nome
-        if (!id.isNullOrBlank() && !name.isNullOrBlank()) {
-            navController.navigate("chat/$id/$name")
+        // Priorizar o ID do Usuário (createdBy) para o chat, fallback para o ID da ONG
+        val targetId = local?.createdBy ?: local?.id 
+        val targetName = local?.nome ?: "Orfanato"
+        if (!targetId.isNullOrBlank()) {
+            navController.navigate("chat/$targetId/$targetName")
         }
     }
 )

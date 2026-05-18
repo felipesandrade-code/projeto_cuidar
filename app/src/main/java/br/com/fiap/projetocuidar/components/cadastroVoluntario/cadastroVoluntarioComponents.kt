@@ -34,6 +34,10 @@ fun CadastroVoluntarioComponents(
     val areasDeAjuda = listOf("Educação", "Saúde", "Artes", "Esportes", "Alimentação", "Apoio psicológico", "Outros")
     val horarios = listOf("Manhã (08h–12h)", "Tarde (13h–17h)", "Noite (18h–22h)", "Fim de semana")
 
+    LaunchedEffect(Unit) {
+        orphanageViewModel.loadOrphanages()
+    }
+
     var areaAjuda by remember { mutableStateOf("") }
     var sobreVoce by remember { mutableStateOf("") }
     var orfanatoSelecionado by remember { mutableStateOf("") }
@@ -179,10 +183,11 @@ fun CadastroVoluntarioComponents(
             Spacer(modifier = Modifier.height(32.dp))
 
             PrimaryButton(
-                text = "Criar",
+                text = "Finalizar Cadastro",
                 onClick = {
-                    navController.navigate("login") {
-                        popUpTo("registro") { inclusive = true }
+                    navController.navigate("home") {
+                        popUpTo("login") { inclusive = false }
+                        launchSingleTop = true
                     }
                 }
             )

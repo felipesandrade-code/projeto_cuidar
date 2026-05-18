@@ -1,6 +1,7 @@
 package br.com.fiap.projetocuidar.Screens.operator
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,24 +24,30 @@ import androidx.navigation.NavController
 import br.com.fiap.projetocuidar.R
 import br.com.fiap.projetocuidar.data.AuditUiState
 import br.com.fiap.projetocuidar.data.AuditViewModel
+import br.com.fiap.projetocuidar.data.AuthViewModel
 import br.com.fiap.projetocuidar.data.network.AuditLogResponse
 
-private val COMMON_ACTIONS = listOf(
-    "Todas", "LOGIN", "REGISTER", "SEND_MESSAGE", "READ_MESSAGE",
-    "CREATE_CAMPAIGN", "SEND_CAMPAIGN", "UPDATE_CUSTOMER", "ADD_NOTE", "CREATE_ORPHANAGE"
+private val ACTIONS = listOf(
+    "CREATE_CAMPAIGN", "SEND_CAMPAIGN", "UPDATE_CUSTOMER", "ADD_NOTE", "CREATE_ORPHANAGE", "DELETE_ORPHANAGE"
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AuditLogsScreen(
     navController: NavController,
-    auditViewModel: AuditViewModel = viewModel()
+    auditViewModel: AuditViewModel = viewModel(),
+    authViewModel: AuthViewModel = viewModel()
 ) {
     val state by auditViewModel.state.collectAsState()
+    val currentUser by authViewModel.currentUser.collectAsState()
+    
     var selectedAction by remember { mutableStateOf<String?>(null) }
     var showFilterDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) { auditViewModel.loadLogs() }
+    // Segurança: Sempre filtrar logs pelo ID do usuário logado no app
+    LaunchedEffect(currentUser) {
+        auditViewModel.loadLogs(userId = currentUser?.id)
+    }
 
     Scaffold(
         topBar = {
@@ -70,9 +77,7 @@ fun AuditLogsScreen(
         ) {
             selectedAction?.let { action ->
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("Filtro: ", fontSize = 13.sp, color = Color.Gray)
@@ -80,7 +85,7 @@ fun AuditLogsScreen(
                         selected = true,
                         onClick = {
                             selectedAction = null
-                            auditViewModel.loadLogs()
+                            auditViewModel.loadLogs(userId = currentUser?.id)
                         },
                         label = { Text(action) }
                     )
@@ -95,25 +100,21 @@ fun AuditLogsScreen(
                 }
                 is AuditUiState.Error -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(s.message, color = Color.Red)
-                            Spacer(Modifier.height(8.dp))
-                            Button(onClick = { auditViewModel.loadLogs() }) { Text("Tentar novamente") }
-                        }
+                        Text(s.message, color = Color.Red)
                     }
                 }
                 is AuditUiState.Success -> {
                     if (s.logs.isEmpty()) {
                         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text("Nenhum log encontrado.", color = Color.Gray)
+                            Text("Nenhum log encontrado para suas ações.", color = Color.Gray)
                         }
                     } else {
                         LazyColumn(
                             contentPadding = PaddingValues(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(s.logs) { log ->
-                                AuditLogCard(log)
+                                LogItem(log)
                             }
                         }
                     }
@@ -129,22 +130,17 @@ fun AuditLogsScreen(
             title = { Text("Filtrar por Ação") },
             text = {
                 Column {
-                    COMMON_ACTIONS.forEach { action ->
+                    ACTIONS.forEach { action ->
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 2.dp)
+                            modifier = Modifier.fillMaxWidth().clickable {
+                                selectedAction = action
+                                auditViewModel.loadLogs(userId = currentUser?.id, acao = action)
+                                showFilterDialog = false
+                            }
                         ) {
-                            RadioButton(
-                                selected = (if (action == "Todas") null else action) == selectedAction,
-                                onClick = {
-                                    selectedAction = if (action == "Todas") null else action
-                                    auditViewModel.loadLogs(acao = selectedAction)
-                                    showFilterDialog = false
-                                }
-                            )
-                            Text(action, fontSize = 13.sp)
+                            RadioButton(selected = selectedAction == action, onClick = null)
+                            Text(action, modifier = Modifier.padding(16.dp))
                         }
                     }
                 }
@@ -157,41 +153,77 @@ fun AuditLogsScreen(
 }
 
 @Composable
-private fun AuditLogCard(log: AuditLogResponse) {
-    val actionColor = when {
-        log.acao.contains("LOGIN") || log.acao.contains("REGISTER") -> Color(0xFF2196F3)
-        log.acao.contains("SEND") || log.acao.contains("CREATE") -> Color(0xFF4CAF50)
-        log.acao.contains("UPDATE") || log.acao.contains("ADD") -> Color(0xFFFF9800)
-        else -> Color(0xFF9E9E9E)
-    }
-
+fun LogItem(log: AuditLogResponse) {
     Card(
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(1.dp),
-        modifier = Modifier.fillMaxWidth()
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        modifier = Modifier.fillMaxWidth(),
+        border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f))
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .background(actionColor.copy(alpha = 0.15f), shape = RoundedCornerShape(6.dp))
-                    .padding(horizontal = 6.dp, vertical = 4.dp)
+        Column(Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(log.acao, fontSize = 10.sp, color = actionColor)
+                Text(
+                    text = log.acao.replace("_", " "),
+                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                    fontSize = 15.sp,
+                    color = colorResource(R.color.cor_registre)
+                )
+                // Exibir Data e Hora Completa
+                Text(
+                    text = log.timestamp?.take(19)?.replace("T", " ") ?: "",
+                    fontSize = 10.sp,
+                    color = Color.Gray,
+                    fontFamily = FontFamily.Monospace
+                )
             }
-            Spacer(Modifier.width(10.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                log.details?.let { Text(it, fontSize = 12.sp, maxLines = 1) }
-                log.userId?.let { Text("Usuário: $it", fontSize = 11.sp, color = Color.Gray) }
+            
+            HorizontalDivider(Modifier.padding(vertical = 8.dp), color = Color.LightGray.copy(alpha = 0.3f))
+            
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Column(modifier = Modifier.weight(1f)) {
+                    log.recurso?.let { DetailRow("Recurso", it) }
+                    // Se for mensagem, tentar mostrar o destinatário nos detalhes ou ID Ref
+                    if (log.acao.contains("MESSAGE") || log.acao.contains("SEND")) {
+                        log.recursoId?.let { DetailRow("Destinatário (ID)", it.take(8) + "...") }
+                    } else {
+                        log.recursoId?.let { DetailRow("ID Ref", it.take(8) + "...") }
+                    }
+                }
+                Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.End) {
+                    log.ip?.let { DetailRow("Origem (IP)", it) }
+                    log.role?.let { DetailRow("Permissão", it) }
+                }
             }
-            log.timestamp?.let {
-                Text(it.take(10), fontSize = 10.sp, color = Color.Gray)
+
+            if (!log.details.isNullOrBlank()) {
+                Spacer(Modifier.height(8.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFFF5F5F5), RoundedCornerShape(4.dp))
+                        .padding(8.dp)
+                ) {
+                    Text(
+                        text = log.details,
+                        fontSize = 11.sp,
+                        color = Color.DarkGray,
+                        fontFamily = FontFamily.Monospace
+                    )
+                }
             }
         }
+    }
+}
+
+@Composable
+private fun DetailRow(label: String, value: String) {
+    Column(modifier = Modifier.padding(vertical = 2.dp)) {
+        Text(label, fontSize = 9.sp, color = Color.Gray, style = MaterialTheme.typography.labelSmall)
+        Text(value, fontSize = 12.sp, color = Color.Black, fontFamily = FontFamily(Font(R.font.nunito_regular)))
     }
 }

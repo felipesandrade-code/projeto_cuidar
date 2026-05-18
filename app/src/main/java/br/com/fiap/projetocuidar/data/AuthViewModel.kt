@@ -5,11 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import br.com.fiap.projetocuidar.data.network.ApiClient
-import br.com.fiap.projetocuidar.data.network.LoginRequest
-import br.com.fiap.projetocuidar.data.network.RegisterRequest
-import br.com.fiap.projetocuidar.data.network.TokenManager
-import br.com.fiap.projetocuidar.data.network.UserResponse
+import br.com.fiap.projetocuidar.data.network.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -22,13 +18,15 @@ data class User(
     val sobrenome: String = "",
     val telefone: String = "",
     val cpfCnpj: String = "",
-    val tipoUsuario: String = ""
+    val tipoUsuario: String = "",
+    val role: String = "CLIENT",
+    val fotoUrl: String? = null
 )
 
 sealed class AuthState {
     object Idle : AuthState()
     object Loading : AuthState()
-    data class Success(val navigateTo: String = "home") : AuthState()
+    data class Success(val navigateTo: String) : AuthState()
     data class Error(val message: String) : AuthState()
 }
 
@@ -37,7 +35,10 @@ private fun UserResponse.toUser() = User(
     email = email,
     nome = nome,
     sobrenome = sobrenome,
-    tipoUsuario = role
+    tipoUsuario = role,
+    role = role,
+    telefone = "",
+    cpfCnpj = ""
 )
 
 class AuthViewModel(app: Application) : AndroidViewModel(app) {
@@ -56,9 +57,15 @@ class AuthViewModel(app: Application) : AndroidViewModel(app) {
             ApiClient.setToken(savedToken)
             try {
                 val response = ApiClient.api.me()
-                val customType = tokenManager.getUserType()
+                val customType = tokenManager.getUserType(response.user.email)
+                val extraData = tokenManager.getExtraData()
+                
                 _currentUser.value = response.user.toUser().copy(
-                    tipoUsuario = customType ?: response.user.role
+                    tipoUsuario = customType ?: response.user.role,
+                    telefone = extraData.first,
+                    cpfCnpj = extraData.second,
+                    fotoUrl = extraData.third,
+                    role = response.user.role // O servidor manda a verdade absoluta sobre a role
                 )
             } catch (e: Exception) {
                 tokenManager.clear()
@@ -74,12 +81,16 @@ class AuthViewModel(app: Application) : AndroidViewModel(app) {
                 val response = ApiClient.api.login(LoginRequest(email, senha))
                 ApiClient.setToken(response.token)
                 
-                // No login, tentamos recuperar o tipo salvo anteriormente
-                val customType = tokenManager.getUserType()
+                val customType = tokenManager.getUserType(email)
+                val extraData = tokenManager.getExtraData()
                 tokenManager.saveSession(response.token, response.user, customType)
                 
                 _currentUser.value = response.user.toUser().copy(
-                    tipoUsuario = customType ?: response.user.role
+                    tipoUsuario = customType ?: response.user.role,
+                    telefone = extraData.first,
+                    cpfCnpj = extraData.second,
+                    fotoUrl = extraData.third,
+                    role = response.user.role
                 )
                 _authState.value = AuthState.Success("home")
             } catch (e: Exception) {
@@ -92,11 +103,13 @@ class AuthViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
             try {
-                android.util.Log.d("AUTH_DEBUG", "Iniciando registro para: ${user.email} como ${user.tipoUsuario}")
-                
-                // Revertendo para CLIENT para evitar o erro 500 no seu servidor
-                // O seu servidor parece aceitar apenas CLIENT na rota de registro
-                val backendRole = "CLIENT"
+                // Distinção de Roles:
+                // Doador: CLIENT (Doador comum)
+                // Voluntário/Orfanato: OPERATOR (Colaboradores ativos)
+                val backendRole = when (user.tipoUsuario.lowercase()) {
+                    "voluntário", "voluntario", "orfanato" -> "OPERATOR"
+                    else -> "CLIENT"
+                }
 
                 val response = ApiClient.api.register(
                     RegisterRequest(
@@ -108,32 +121,27 @@ class AuthViewModel(app: Application) : AndroidViewModel(app) {
                         role = backendRole
                     )
                 )
-                android.util.Log.d("AUTH_DEBUG", "Registro concluído com sucesso. Salvando tipo localmente: ${user.tipoUsuario}")
                 ApiClient.setToken(response.token)
-                
-                // Salvar o tipo de usuário (Orfanato, Voluntário, etc) localmente no celular
                 tokenManager.saveSession(response.token, response.user, user.tipoUsuario)
+                tokenManager.updateLocalUser(user.telefone, user.cpfCnpj, user.fotoUrl, user.tipoUsuario, backendRole)
                 
                 _currentUser.value = response.user.toUser().copy(
                     cpfCnpj = user.cpfCnpj,
                     tipoUsuario = user.tipoUsuario,
-                    telefone = user.telefone
+                    telefone = user.telefone,
+                    fotoUrl = user.fotoUrl,
+                    role = response.user.role // Usamos o que o servidor devolveu
                 )
-                val dest = when (user.tipoUsuario) {
-                    "Doador" -> "registro_doador"
-                    "Voluntário" -> "registro_voluntario"
-                    "Orfanato" -> "registerOng"
+                
+                val dest = when (user.tipoUsuario.lowercase()) {
+                    "doador" -> "registro_doador"
+                    "voluntário", "voluntario" -> "registro_voluntario"
+                    "orfanato" -> "registerOng"
                     else -> "home"
                 }
                 _authState.value = AuthState.Success(dest)
             } catch (e: Exception) {
-                android.util.Log.e("AUTH_DEBUG", "Erro no registro: ${e.message}", e)
-                val msg = when {
-                    e.message?.contains("409") == true -> "Este e-mail já está cadastrado."
-                    e.message?.contains("400") == true -> "Dados inválidos. Verifique e tente novamente."
-                    else -> "Erro ao criar conta. Verifique a conexão."
-                }
-                _authState.value = AuthState.Error(msg)
+                _authState.value = AuthState.Error("Erro ao criar conta: ${e.message}")
             }
         }
     }
@@ -153,6 +161,9 @@ class AuthViewModel(app: Application) : AndroidViewModel(app) {
 
     fun updateUser(user: User) {
         _currentUser.value = user
+        viewModelScope.launch {
+            tokenManager.updateLocalUser(user.telefone, user.cpfCnpj, user.fotoUrl, user.tipoUsuario, user.role)
+        }
     }
 
     class Factory(private val app: Application) : ViewModelProvider.Factory {

@@ -1,7 +1,10 @@
 package br.com.fiap.projetocuidar.components.cadastroOrfanato
 
 import android.location.Geocoder
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -9,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -17,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -32,6 +37,8 @@ import br.com.fiap.projetocuidar.components.*
 import br.com.fiap.projetocuidar.data.AuthViewModel
 import br.com.fiap.projetocuidar.data.Orphanage
 import br.com.fiap.projetocuidar.data.OrphanageViewModel
+import br.com.fiap.projetocuidar.util.TelefoneVisualTransformation
+import coil.compose.AsyncImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -49,7 +56,7 @@ fun TimePickerDialogCustom(
             TextButton(onClick = { onConfirm(state.hour, state.minute) }) { Text("Confirmar") }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancelar") }
+            TextButton(onClick = { onDismiss() }) { Text("Cancelar") }
         },
         text = {
             TimePicker(state = state)
@@ -71,11 +78,7 @@ fun CadastroOngComponents(
     val scope = rememberCoroutineScope()
     var isNavigating by remember { mutableStateOf(false) }
 
-    val currentUserId = currentUser?.id
-
     var nome by remember { mutableStateOf("") }
-    
-    // Categorias pré-estipuladas
     var categoria by remember { mutableStateOf("") }
     var categoriaExpanded by remember { mutableStateOf(false) }
     val categoriasLista = listOf(
@@ -101,17 +104,51 @@ fun CadastroOngComponents(
     var showAberturaPicker by remember { mutableStateOf(false) }
     var showFechamentoPicker by remember { mutableStateOf(false) }
 
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let { foto = it.toString() }
+    }
+
     LaunchedEffect(horaAbertura, horaFechamento) {
         horario = "$horaAbertura às $horaFechamento"
     }
 
     val latSel by vm.selectedLat
     val lngSel by vm.selectedLng
+    val currentUserId = currentUser?.id
 
-    LaunchedEffect(currentUser) {
-        currentUser?.let {
+    LaunchedEffect(currentUser, vm.orphanages) {
+        val myOrphanage = vm.orphanages.find { it.createdBy == currentUser?.id }
+        myOrphanage?.let {
             if (nome.isBlank()) nome = it.nome
+            if (categoria.isBlank()) categoria = it.categoria
+            if (sobre.isBlank()) sobre = it.sobre ?: ""
             if (telefone.isBlank()) telefone = it.telefone
+            if (foto.isBlank()) foto = it.fotoUrl ?: ""
+            if (instrucoes.isBlank()) instrucoes = it.instrucaoVisita ?: ""
+            
+            if (horario.isBlank() || horario == "08:00 às 18:00") {
+                it.horarioVisita?.let { h ->
+                    horario = h
+                    val parts = h.split(" às ")
+                    if (parts.size == 2) {
+                        horaAbertura = parts[0]
+                        horaFechamento = parts[1]
+                    }
+                }
+            }
+            
+            fimDeSemana = it.fimDeSemana
+            
+            if (vm.selectedLat.value == null) {
+                vm.setSelected(it.lat, it.lng)
+            }
+        } ?: run {
+            currentUser?.let {
+                if (nome.isBlank()) nome = it.nome
+                if (telefone.isBlank()) telefone = it.telefone
+            }
         }
     }
 
@@ -148,7 +185,6 @@ fun CadastroOngComponents(
             DividerComponent()
             Spacer(Modifier.height(16.dp))
 
-            // BUSCA POR ENDEREÇO (Geocodificação)
             FormFieldLabel("Localização (Digite o endereço)")
             OutlinedTextField(
                 value = endereco,
@@ -208,20 +244,10 @@ fun CadastroOngComponents(
                         if (!isNavigating) {
                             isNavigating = true
                             locationError = null
-                            try {
-                                android.util.Log.d("MAP_CLICK", "Botão de mapa clicado. Navegando para map_select")
-                                navController.navigate("map_select")
-                            } catch (e: Exception) {
-                                android.util.Log.e("MAP_CLICK", "Falha crítica ao navegar: ${e.message}")
-                                locationError = "Erro ao abrir o mapa. Tente novamente."
-                                isNavigating = false
-                            }
+                            navController.navigate("map_select")
                         }
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                        .height(52.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).height(52.dp),
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.cor_card_footer))
                 ) {
@@ -230,9 +256,7 @@ fun CadastroOngComponents(
                 }
             } else {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 8.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     AssistChip(
@@ -241,15 +265,7 @@ fun CadastroOngComponents(
                         leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null, tint = verdePrimario) },
                         modifier = Modifier.weight(1f).padding(end = 8.dp)
                     )
-                    TextButton(
-                        onClick = { 
-                            if (!isNavigating) {
-                                isNavigating = true
-                                navController.navigate("map_select") 
-                            }
-                        },
-                        modifier = Modifier.clip(CircleShape)
-                    ) { Text("Alterar") }
+                    TextButton(onClick = { navController.navigate("map_select") }) { Text("Alterar") }
                 }
             }
 
@@ -270,7 +286,6 @@ fun CadastroOngComponents(
             nomeError?.let { Text("Campo Nome vazio", color = MaterialTheme.colorScheme.error, fontSize = 12.sp, modifier = Modifier.padding(start = 24.dp, top = 2.dp)) }
             Spacer(Modifier.height(12.dp))
 
-            // CATEGORIA COM SELECT (DROPDOWN)
             FormFieldLabel("Categoria")
             ExposedDropdownMenuBox(
                 expanded = categoriaExpanded,
@@ -319,28 +334,44 @@ fun CadastroOngComponents(
             FormFieldLabel("Telefone")
             OutlinedTextField(
                 value = telefone,
-                onValueChange = { telefone = it },
+                onValueChange = { if (it.all { c -> c.isDigit() } && it.length <= 11) telefone = it },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
                 placeholder = { Text("Digite o telefone do orfanato com o DDD", color = Color.Gray, fontSize = 14.sp) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 shape = RoundedCornerShape(12.dp),
                 colors = fieldColors,
-                isError = telefoneError != null
+                isError = telefoneError != null,
+                visualTransformation = TelefoneVisualTransformation()
             )
             telefoneError?.let { Text("Campo Telefone vazio", color = MaterialTheme.colorScheme.error, fontSize = 12.sp, modifier = Modifier.padding(start = 24.dp, top = 2.dp)) }
             Spacer(Modifier.height(12.dp))
 
-            FormFieldLabel("Foto (url)")
-            OutlinedTextField(
-                value = foto,
-                onValueChange = { foto = it },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
-                shape = RoundedCornerShape(12.dp),
-                colors = fieldColors
-            )
+            FormFieldLabel("Foto da Instituição")
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .padding(horizontal = 20.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.White)
+                    .clickable { galleryLauncher.launch("image/*") },
+                contentAlignment = Alignment.Center
+            ) {
+                if (foto.isNotBlank()) {
+                    AsyncImage(
+                        model = foto,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(Icons.Default.AddAPhoto, contentDescription = null, tint = Color.Gray)
+                        Text("Toque para selecionar foto", fontSize = 12.sp, color = Color.Gray)
+                    }
+                }
+            }
 
             Spacer(Modifier.height(20.dp))
 
@@ -364,9 +395,7 @@ fun CadastroOngComponents(
 
             FormFieldLabel("Horário das visitas")
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 OutlinedButton(
@@ -409,9 +438,7 @@ fun CadastroOngComponents(
             Spacer(Modifier.height(8.dp))
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 8.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -428,35 +455,41 @@ fun CadastroOngComponents(
 
             Spacer(Modifier.height(24.dp))
 
+            val myOrphanage = remember(vm.orphanages, currentUser) {
+                vm.orphanages.find { it.createdBy == currentUser?.id }
+            }
+
             PrimaryButton(
-                text = "Cadastrar",
+                text = if (myOrphanage != null) "Atualizar" else "Cadastrar",
                 onClick = {
                     nomeError = if (nome.isBlank()) "err" else null
                     telefoneError = if (telefone.isBlank()) "err" else null
                     instrucoesError = if (instrucoes.isBlank()) "err" else null
                     horarioError = if (horario.isBlank()) "err" else null
-                    locationError = if (latSel == null || lngSel == null) "Selecione a localização no mapa ou busque por endereço" else null
+                    locationError = if (latSel == null || lngSel == null) "Selecione" else null
 
                     val allOk = listOf(nomeError, telefoneError, instrucoesError, horarioError, locationError).all { it == null }
                     if (allOk) {
-                        vm.add(
-                            Orphanage(
-                                nome = nome,
-                                categoria = categoria.ifBlank { "Geral" },
-                                telefone = telefone,
-                                sobre = sobre.ifBlank { null },
-                                fotoUrl = foto.ifBlank { null },
-                                instrucaoVisita = instrucoes,
-                                horarioVisita = horario,
-                                fimDeSemana = fimDeSemana,
-                                lat = latSel!!,
-                                lng = lngSel!!,
-                                createdBy = currentUserId
-                            )
+                        val orphanageData = Orphanage(
+                            id = myOrphanage?.id ?: java.util.UUID.randomUUID().toString(),
+                            nome = nome,
+                            categoria = categoria.ifBlank { "Geral" },
+                            telefone = telefone,
+                            sobre = sobre.ifBlank { null },
+                            fotoUrl = foto.ifBlank { null },
+                            instrucaoVisita = instrucoes,
+                            horarioVisita = horario,
+                            fimDeSemana = fimDeSemana,
+                            lat = latSel!!,
+                            lng = lngSel!!,
+                            createdBy = currentUserId
                         )
+                        
+                        if (myOrphanage != null) vm.delete(myOrphanage.id)
+                        vm.add(orphanageData)
                         vm.clearSelected()
-                        navController.navigate("mapa") {
-                            popUpTo("mapa") { inclusive = true }
+                        navController.navigate("home") {
+                            popUpTo("login") { inclusive = false }
                             launchSingleTop = true
                         }
                     }

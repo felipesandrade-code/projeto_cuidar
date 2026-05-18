@@ -29,10 +29,18 @@ class SegmentViewModel : ViewModel() {
         _state.value = SegmentUiState.Loading
         viewModelScope.launch {
             try {
-                val list = ApiClient.api.getSegments()
-                _state.value = SegmentUiState.Success(list)
+                val segments = ApiClient.api.getSegments()
+                _state.value = SegmentUiState.Success(segments)
             } catch (e: Exception) {
-                _state.value = SegmentUiState.Error("Erro ao carregar segmentos.")
+                // Logar o erro para depuração
+                android.util.Log.e("SEGMENT_ERROR", "Erro ao carregar segmentos: ${e.message}")
+
+                val errorMessage = if (e.message?.contains("403") == true) {
+                    "Acesso negado aos segmentos. Verifique suas permissões."
+                } else {
+                    "Erro ao carregar segmentos."
+                }
+                _state.value = SegmentUiState.Error(errorMessage)
             }
         }
     }

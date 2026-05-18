@@ -21,6 +21,12 @@ class TokenManager(private val context: Context) {
         private val KEY_USER_SOBRENOME = stringPreferencesKey("user_sobrenome")
         private val KEY_USER_ROLE = stringPreferencesKey("user_role")
         private val KEY_USER_TYPE = stringPreferencesKey("user_type")
+        private val KEY_USER_PHONE = stringPreferencesKey("user_phone")
+        private val KEY_USER_CPF_CNPJ = stringPreferencesKey("user_cpf_cnpj")
+        private val KEY_USER_FOTO = stringPreferencesKey("user_foto")
+        
+        // Chave base para mapear email -> tipo
+        private fun typeKey(email: String) = stringPreferencesKey("type_$email")
     }
 
     suspend fun saveSession(token: String, user: UserResponse, customType: String? = null) {
@@ -31,14 +37,43 @@ class TokenManager(private val context: Context) {
             prefs[KEY_USER_NOME] = user.nome
             prefs[KEY_USER_SOBRENOME] = user.sobrenome
             prefs[KEY_USER_ROLE] = user.role
-            if (customType != null) {
-                prefs[KEY_USER_TYPE] = customType
+            
+            // Se recebemos um tipo (no registro ou se já tínhamos), salvamos
+            val typeToSave = customType ?: prefs[typeKey(user.email)]
+            if (typeToSave != null) {
+                prefs[KEY_USER_TYPE] = typeToSave
+                prefs[typeKey(user.email)] = typeToSave
             }
         }
     }
 
-    suspend fun getUserType(): String? =
-        context.authDataStore.data.map { it[KEY_USER_TYPE] }.first()
+    suspend fun updateLocalUser(phone: String, cpfCnpj: String, fotoUrl: String?, type: String, role: String) {
+        context.authDataStore.edit { prefs ->
+            prefs[KEY_USER_PHONE] = phone
+            prefs[KEY_USER_CPF_CNPJ] = cpfCnpj
+            prefs[KEY_USER_TYPE] = type
+            prefs[KEY_USER_ROLE] = role
+            if (fotoUrl != null) prefs[KEY_USER_FOTO] = fotoUrl else prefs.remove(KEY_USER_FOTO)
+        }
+    }
+
+    suspend fun getExtraData(): Triple<String, String, String?> {
+        val prefs = context.authDataStore.data.first()
+        return Triple(
+            prefs[KEY_USER_PHONE] ?: "",
+            prefs[KEY_USER_CPF_CNPJ] ?: "",
+            prefs[KEY_USER_FOTO]
+        )
+    }
+
+    suspend fun getUserType(email: String? = null): String? {
+        val prefs = context.authDataStore.data.first()
+        return if (email != null) {
+            prefs[typeKey(email)] ?: prefs[KEY_USER_TYPE]
+        } else {
+            prefs[KEY_USER_TYPE]
+        }
+    }
 
     suspend fun getToken(): String? =
         context.authDataStore.data.map { it[KEY_TOKEN] }.first()
@@ -54,6 +89,14 @@ class TokenManager(private val context: Context) {
     }
 
     suspend fun clear() {
-        context.authDataStore.edit { it.clear() }
+        context.authDataStore.edit { prefs ->
+            prefs.remove(KEY_TOKEN)
+            prefs.remove(KEY_USER_ID)
+            prefs.remove(KEY_USER_EMAIL)
+            prefs.remove(KEY_USER_NOME)
+            prefs.remove(KEY_USER_SOBRENOME)
+            prefs.remove(KEY_USER_ROLE)
+            prefs.remove(KEY_USER_TYPE)
+        }
     }
 }

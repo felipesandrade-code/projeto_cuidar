@@ -23,18 +23,25 @@ import br.com.fiap.projetocuidar.R
 import br.com.fiap.projetocuidar.components.FormFieldLabel
 import br.com.fiap.projetocuidar.components.PrimaryButton
 import br.com.fiap.projetocuidar.components.SuperiorComLogo
+import br.com.fiap.projetocuidar.data.AuthViewModel
 import br.com.fiap.projetocuidar.data.OrphanageViewModel
+import br.com.fiap.projetocuidar.data.ManagementViewModel
+import br.com.fiap.projetocuidar.data.Donation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DoacaoComponents(
     navController: NavController,
-    orphanageViewModel: OrphanageViewModel
+    orphanageViewModel: OrphanageViewModel,
+    managementViewModel: ManagementViewModel,
+    authViewModel: AuthViewModel
 ) {
+    val currentUser by authViewModel.currentUser.collectAsState()
     val orphanages = orphanageViewModel.orphanages
     val tiposDoacao = listOf("Dinheiro", "Roupas", "Alimentos", "Brinquedos", "Materiais escolares", "Outros")
 
     var orfanatoSelecionado by remember { mutableStateOf("") }
+    var orfanatoIdSelecionado by remember { mutableStateOf("") }
     var tipoDoacao by remember { mutableStateOf("") }
     var valorDoacao by remember { mutableStateOf("") }
     var mensagem by remember { mutableStateOf("") }
@@ -95,7 +102,11 @@ fun DoacaoComponents(
                 orphanages.forEach { o ->
                     DropdownMenuItem(
                         text = { Text(o.nome, fontFamily = FontFamily(Font(R.font.nunito_regular))) },
-                        onClick = { orfanatoSelecionado = o.nome; orfanatoExpanded = false }
+                        onClick = { 
+                            orfanatoSelecionado = o.nome
+                            orfanatoIdSelecionado = o.id
+                            orfanatoExpanded = false 
+                        }
                     )
                 }
                 if (orphanages.isEmpty()) {
@@ -181,7 +192,17 @@ fun DoacaoComponents(
 
         PrimaryButton(
             text = "Salvar doação",
-            onClick = { saved = true }
+            onClick = { 
+                val donation = Donation(
+                    orphanageId = orfanatoIdSelecionado,
+                    donorName = "${currentUser?.nome ?: "Doador"} ${currentUser?.sobrenome ?: ""}".trim(),
+                    type = tipoDoacao,
+                    value = if (valorDoacao.isNotBlank()) "R$ $valorDoacao" else null,
+                    message = mensagem
+                )
+                managementViewModel.addDonation(donation)
+                saved = true 
+            }
         )
 
         Spacer(modifier = Modifier.height(32.dp))

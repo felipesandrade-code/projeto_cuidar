@@ -113,6 +113,7 @@ data class CreateSegmentRequest(
 data class AddClientToSegmentRequest(val clienteId: String)
 
 data class MessageRequest(
+    val remetente: String? = null,
     val destinatario: String? = null,
     val segmentoId: String? = null,
     val tipo: String = "TEXT",
@@ -121,6 +122,7 @@ data class MessageRequest(
 
 data class MessageResponse(
     val id: String,
+    val remetente: String? = null,
     val destinatario: String? = null,
     val segmentoId: String? = null,
     val tipo: String,
@@ -160,7 +162,11 @@ data class ScheduleCampaignRequest(val scheduledAt: String)
 data class AuditLogResponse(
     val id: String,
     val userId: String? = null,
+    val role: String? = null,
     val acao: String,
+    val recurso: String? = null,
+    val recursoId: String? = null,
     val details: String? = null,
+    val ip: String? = null,
     val timestamp: String? = null
 )

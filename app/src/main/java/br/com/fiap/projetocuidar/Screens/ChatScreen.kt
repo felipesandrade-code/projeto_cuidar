@@ -46,11 +46,14 @@ fun ChatScreen(
         currentUserId?.let { messageViewModel.loadInbox(it) }
     }
 
-    val chatMessages = remember(messageState) {
+    val chatMessages = remember(messageState, currentUserId, orphanageId) {
         if (messageState is MessageUiState.Success) {
             val list = (messageState as MessageUiState.Success).messages
-            android.util.Log.d("CHAT_DEBUG", "Renderizando ${list.size} mensagens")
-            list.sortedBy { it.createdAt ?: "" }
+            // Filtrar mensagens desta conversa específica
+            list.filter { 
+                (it.remetente == currentUserId && it.destinatario == orphanageId) ||
+                (it.remetente == orphanageId && it.destinatario == currentUserId)
+            }.sortedBy { it.createdAt ?: "" }
         } else emptyList()
     }
 
@@ -104,7 +107,8 @@ fun ChatScreen(
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         items(chatMessages) { msg ->
-                            val isMine = msg.destinatario != currentUserId
+                            // A mensagem é minha se eu sou o remetente
+                            val isMine = msg.remetente == currentUserId
                             
                             MessageBubble(msg, isMine)
                         }
@@ -139,9 +143,10 @@ fun ChatScreen(
                     Spacer(Modifier.width(8.dp))
                     FloatingActionButton(
                         onClick = {
-                            if (textMessage.isNotBlank()) {
+                            if (textMessage.isNotBlank() && currentUserId != null) {
                                 messageViewModel.sendMessage(
-                                    destinatario = orphanageName,
+                                    senderId = currentUserId,
+                                    destinatario = orphanageId,
                                     segmentoId = null,
                                     conteudo = textMessage
                                 )

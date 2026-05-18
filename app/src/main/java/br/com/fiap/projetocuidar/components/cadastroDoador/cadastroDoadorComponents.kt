@@ -102,10 +102,11 @@ fun CadastroDoadorComponents(navController: NavController) {
             Spacer(modifier = Modifier.height(32.dp))
 
             PrimaryButton(
-                text = "Criar",
+                text = "Finalizar Cadastro",
                 onClick = {
-                    navController.navigate("login") {
-                        popUpTo("registro") { inclusive = true }
+                    navController.navigate("home") {
+                        popUpTo("login") { inclusive = false }
+                        launchSingleTop = true
                     }
                 }
             )

@@ -5,12 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Message
-import androidx.compose.material.icons.filled.Note
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -45,11 +43,20 @@ fun CustomerDetailScreen(
     var showNoteDialog by remember { mutableStateOf(false) }
     var showMessageDialog by remember { mutableStateOf("") }
     var showMessageDialogVisible by remember { mutableStateOf(false) }
+    
+    // Estados para edição de perfil (Tags e Score)
+    var showEditProfileDialog by remember { mutableStateOf(false) }
+    var editScore by remember { mutableStateOf(customer.score.toString()) }
+    var editTags by remember { mutableStateOf(customer.tags.joinToString(", ")) }
 
     LaunchedEffect(customer.id) { customerViewModel.loadTimeline(customer.id) }
 
     LaunchedEffect(actionMessage) {
-        if (actionMessage != null) customerViewModel.clearMessage()
+        if (actionMessage != null) {
+            // Recarregar dados após atualização
+            customerViewModel.loadCustomers()
+            customerViewModel.clearMessage()
+        }
     }
     LaunchedEffect(sendState) {
         if (sendState != null) messageViewModel.clearSendState()
@@ -105,23 +112,35 @@ fun CustomerDetailScreen(
 
             // Action buttons
             item {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     Button(
                         onClick = { showMessageDialogVisible = true },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF51701A)),
                         modifier = Modifier.weight(1f)
                     ) {
-                        Icon(Icons.Default.Message, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.Message, contentDescription = null, modifier = Modifier.size(14.dp))
                         Spacer(Modifier.width(4.dp))
-                        Text("Enviar Mensagem", fontSize = 12.sp)
+                        Text("Mensagem", fontSize = 11.sp)
+                    }
+                    Button(
+                        onClick = { showEditProfileDialog = true },
+                        colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.cor_registre)),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(14.dp))
+                        Spacer(Modifier.width(4.dp))
+                        Text("Editar Perfil", fontSize = 11.sp)
                     }
                     OutlinedButton(
                         onClick = { showNoteDialog = true },
                         modifier = Modifier.weight(1f)
                     ) {
-                        Icon(Icons.Default.Note, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.Note, contentDescription = null, modifier = Modifier.size(14.dp))
                         Spacer(Modifier.width(4.dp))
-                        Text("Adicionar Nota", fontSize = 12.sp)
+                        Text("Nota", fontSize = 11.sp)
                     }
                 }
             }
@@ -177,6 +196,46 @@ fun CustomerDetailScreen(
         }
     }
 
+    // Edit Profile Dialog (Score e Tags)
+    if (showEditProfileDialog) {
+        AlertDialog(
+            onDismissRequest = { showEditProfileDialog = false },
+            title = { Text("Editar Perfil do Doador") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    OutlinedTextField(
+                        value = editScore,
+                        onValueChange = { if (it.all { c -> c.isDigit() }) editScore = it },
+                        label = { Text("Score de Engajamento") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                    OutlinedTextField(
+                        value = editTags,
+                        onValueChange = { editTags = it },
+                        label = { Text("Tags (separadas por vírgula)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text("Ex: Fiel, Alimentos, Empresa") }
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    val tagsList = editTags.split(",").map { it.trim() }.filter { it.isNotBlank() }
+                    customerViewModel.updateCustomer(
+                        id = customer.id,
+                        score = editScore.toIntOrNull(),
+                        tags = tagsList
+                    )
+                    showEditProfileDialog = false
+                }) { Text("Salvar") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showEditProfileDialog = false }) { Text("Cancelar") }
+            }
+        )
+    }
+
     // Note dialog
     if (showNoteDialog) {
         AlertDialog(
@@ -222,7 +281,11 @@ fun CustomerDetailScreen(
             confirmButton = {
                 TextButton(onClick = {
                     if (showMessageDialog.isNotBlank()) {
-                        messageViewModel.sendMessage(destinatario = customer.id, conteudo = showMessageDialog)
+                        messageViewModel.sendMessage(
+                            senderId = "system", // Placeholder
+                            destinatario = customer.id, 
+                            conteudo = showMessageDialog
+                        )
                         showMessageDialog = ""
                         showMessageDialogVisible = false
                     }

@@ -1,34 +1,29 @@
 package br.com.fiap.projetocuidar.components.registroUsuario
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddAPhoto
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -38,11 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import br.com.fiap.projetocuidar.R
 import br.com.fiap.projetocuidar.ValidateEmail
-import br.com.fiap.projetocuidar.components.DividerComponent
-import br.com.fiap.projetocuidar.components.FormFieldLabel
-import br.com.fiap.projetocuidar.components.PrimaryButton
-import br.com.fiap.projetocuidar.components.SuperiorRegister
-import br.com.fiap.projetocuidar.components.TituloComponents
+import br.com.fiap.projetocuidar.components.*
 import br.com.fiap.projetocuidar.data.AuthState
 import br.com.fiap.projetocuidar.data.AuthViewModel
 import br.com.fiap.projetocuidar.data.User
@@ -50,6 +41,7 @@ import br.com.fiap.projetocuidar.util.CpfCnpjVisualTransformation
 import br.com.fiap.projetocuidar.util.TelefoneVisualTransformation
 import br.com.fiap.projetocuidar.validateSenha
 import br.com.fiap.projetocuidar.validateTelefone
+import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,8 +55,16 @@ fun RegisterComponents(
     var nome by remember { mutableStateOf("") }
     var telefone by remember { mutableStateOf("") }
     var cpfCnpj by remember { mutableStateOf("") }
+    var fotoUrl by remember { mutableStateOf("") }
     var tipoUsuario by remember { mutableStateOf("") }
+    
     var tipoExpanded by remember { mutableStateOf(false) }
+    
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let { fotoUrl = it.toString() }
+    }
 
     var emailErrorMessage by remember { mutableStateOf<String?>(null) }
     var nomeErrorMessage by remember { mutableStateOf<String?>(null) }
@@ -125,6 +125,41 @@ fun RegisterComponents(
             DividerComponent()
             Spacer(modifier = Modifier.height(16.dp))
 
+            // SELETOR DE FOTO
+            Box(
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(CircleShape)
+                    .background(Color.White)
+                    .align(Alignment.CenterHorizontally)
+                    .clickable { galleryLauncher.launch("image/*") },
+                contentAlignment = Alignment.Center
+            ) {
+                if (fotoUrl.isNotBlank()) {
+                    AsyncImage(
+                        model = fotoUrl,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Icon(
+                        Icons.Default.AddAPhoto,
+                        contentDescription = null,
+                        tint = colorResource(R.color.cor_registre),
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+            }
+            Text(
+                "Toque para escolher foto",
+                fontSize = 11.sp,
+                color = colorResource(R.color.cor_registre),
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 4.dp)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             registrationErrorMessage?.let { msg ->
                 Text(
                     text = msg,
@@ -174,7 +209,7 @@ fun RegisterComponents(
                 value = telefone,
                 onValueChange = { if (it.all { c -> c.isDigit() } && it.length <= 11) telefone = it },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-                placeholder = { Text("Digite o seu telefone com o DDD", color = Color.Gray, fontSize = 14.sp) },
+                placeholder = { Text("Ex: 11999999999", color = Color.Gray, fontSize = 14.sp) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 shape = RoundedCornerShape(12.dp),
@@ -209,7 +244,7 @@ fun RegisterComponents(
                 value = cpfCnpj,
                 onValueChange = { if (it.all { c -> c.isDigit() } && it.length <= 14) cpfCnpj = it },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-                placeholder = { Text("Digite o seu cpf/cnpj", color = Color.Gray, fontSize = 14.sp) },
+                placeholder = { Text("Apenas números", color = Color.Gray, fontSize = 14.sp) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 shape = RoundedCornerShape(12.dp),
@@ -233,7 +268,7 @@ fun RegisterComponents(
                     onValueChange = {},
                     readOnly = true,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = tipoExpanded) },
-                    placeholder = { Text("Selecione se você é voluntário, doador ou orfanato", color = Color.Gray, fontSize = 13.sp) },
+                    placeholder = { Text("Selecione o seu perfil", color = Color.Gray, fontSize = 13.sp) },
                     modifier = Modifier.fillMaxWidth().menuAnchor(),
                     shape = RoundedCornerShape(12.dp),
                     colors = fieldColors,
@@ -278,7 +313,8 @@ fun RegisterComponents(
                                 nome = nome,
                                 telefone = telefone,
                                 cpfCnpj = cpfCnpj,
-                                tipoUsuario = tipoUsuario
+                                tipoUsuario = tipoUsuario,
+                                fotoUrl = fotoUrl.ifBlank { null }
                             )
                         )
                     }
@@ -289,4 +325,3 @@ fun RegisterComponents(
         }
     }
 }
-

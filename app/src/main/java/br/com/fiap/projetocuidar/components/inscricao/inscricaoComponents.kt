@@ -23,22 +23,41 @@ import br.com.fiap.projetocuidar.R
 import br.com.fiap.projetocuidar.components.FormFieldLabel
 import br.com.fiap.projetocuidar.components.PrimaryButton
 import br.com.fiap.projetocuidar.components.SuperiorComLogo
+import br.com.fiap.projetocuidar.data.AuthViewModel
 import br.com.fiap.projetocuidar.data.OrphanageViewModel
+import br.com.fiap.projetocuidar.data.ManagementViewModel
+import br.com.fiap.projetocuidar.data.Volunteer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InscricaoComponents(
     navController: NavController,
-    orphanageViewModel: OrphanageViewModel
+    orphanageViewModel: OrphanageViewModel,
+    managementViewModel: ManagementViewModel,
+    authViewModel: AuthViewModel
 ) {
+    val currentUser by authViewModel.currentUser.collectAsState()
     val orphanages = orphanageViewModel.orphanages
     val trabalhos = listOf("Educação", "Saúde", "Artes", "Esportes", "Alimentação", "Apoio psicológico", "Outros")
-    val horarios = listOf("Manhã (08h–12h)", "Tarde (13h–17h)", "Noite (18h–22h)", "Fim de semana")
-
+    
+    // Estados para seleção
+    var selectedOrphanage by remember { mutableStateOf<br.com.fiap.projetocuidar.data.Orphanage?>(null) }
     var orfanatoSelecionado by remember { mutableStateOf("") }
+    var orfanatoIdSelecionado by remember { mutableStateOf("") }
     var trabalhoSelecionado by remember { mutableStateOf("") }
     var horarioSelecionado by remember { mutableStateOf("") }
     var observacoes by remember { mutableStateOf("") }
+
+    // Gerar lista de horários dinâmica
+    val horariosDisponiveis = remember(selectedOrphanage) {
+        val base = mutableListOf("Manhã (08h–12h)", "Tarde (13h–17h)", "Noite (18h–22h)")
+        if (selectedOrphanage?.fimDeSemana == true) {
+            base.add("Fim de semana")
+        }
+        // Se o orfanato tiver um horário específico cadastrado, adicionamos como opção
+        selectedOrphanage?.horarioVisita?.let { if (it.isNotBlank()) base.add(0, "Horário da Instituição: $it") }
+        base
+    }
 
     var orfanatoExpanded by remember { mutableStateOf(false) }
     var trabalhoExpanded by remember { mutableStateOf(false) }
@@ -97,7 +116,13 @@ fun InscricaoComponents(
                 orphanages.forEach { o ->
                     DropdownMenuItem(
                         text = { Text(o.nome, fontFamily = FontFamily(Font(R.font.nunito_regular))) },
-                        onClick = { orfanatoSelecionado = o.nome; orfanatoExpanded = false }
+                        onClick = { 
+                            selectedOrphanage = o
+                            orfanatoSelecionado = o.nome
+                            orfanatoIdSelecionado = o.id
+                            horarioSelecionado = "" // Resetar horário ao trocar de ONG
+                            orfanatoExpanded = false 
+                        }
                     )
                 }
                 if (orphanages.isEmpty()) {
@@ -160,14 +185,13 @@ fun InscricaoComponents(
                 expanded = horarioExpanded,
                 onDismissRequest = { horarioExpanded = false }
             ) {
-                horarios.forEach { h ->
+                horariosDisponiveis.forEach { h ->
                     DropdownMenuItem(
                         text = { Text(h, fontFamily = FontFamily(Font(R.font.nunito_regular))) },
                         onClick = { horarioSelecionado = h; horarioExpanded = false }
                     )
                 }
-            }
-        }
+            }        }
         Spacer(modifier = Modifier.height(12.dp))
 
         FormFieldLabel("Observações sobre a sua ajuda")
@@ -200,7 +224,18 @@ fun InscricaoComponents(
 
         PrimaryButton(
             text = "Salvar inscrição",
-            onClick = { saved = true }
+            onClick = { 
+                val volunteer = Volunteer(
+                    userId = currentUser?.id, // ID real do usuário para mensagens
+                    orphanageId = orfanatoIdSelecionado,
+                    name = "${currentUser?.nome ?: "Voluntário"} ${currentUser?.sobrenome ?: ""}".trim(),
+                    email = currentUser?.email ?: "",
+                    task = trabalhoSelecionado,
+                    isAvailable = true
+                )
+                managementViewModel.addVolunteer(volunteer)
+                saved = true 
+            }
         )
 
         Spacer(modifier = Modifier.height(32.dp))

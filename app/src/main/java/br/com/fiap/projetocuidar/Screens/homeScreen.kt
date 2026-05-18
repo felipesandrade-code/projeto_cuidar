@@ -7,9 +7,15 @@ import androidx.navigation.NavController
 import br.com.fiap.projetocuidar.components.home.HomeComponents
 import br.com.fiap.projetocuidar.data.AuthViewModel
 import br.com.fiap.projetocuidar.data.OrphanageViewModel
+import br.com.fiap.projetocuidar.data.ManagementViewModel
 
 @Composable
-fun HomeScreen(navController: NavController, authViewModel: AuthViewModel, orphanageViewModel: OrphanageViewModel) {
+fun HomeScreen(
+    navController: NavController, 
+    authViewModel: AuthViewModel, 
+    orphanageViewModel: OrphanageViewModel,
+    managementViewModel: ManagementViewModel
+) {
     LaunchedEffect(Unit) {
         orphanageViewModel.loadOrphanages()
     }
@@ -17,6 +23,7 @@ fun HomeScreen(navController: NavController, authViewModel: AuthViewModel, orpha
         modifier = Modifier, 
         navController = navController, 
         authViewModel = authViewModel,
-        orphanageViewModel = orphanageViewModel
+        orphanageViewModel = orphanageViewModel,
+        managementViewModel = managementViewModel
     )
 }
