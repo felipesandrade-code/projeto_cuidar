@@ -110,6 +110,7 @@ fun RegisterComponents(
         modifier = Modifier
             .fillMaxSize()
             .background(color = colorResource(R.color.cor_column_registre))
+            .statusBarsPadding()
     ) {
         SuperiorRegister(Modifier, "Cadastro", navcontroller)
 
@@ -119,6 +120,8 @@ fun RegisterComponents(
                 .padding(top = 56.dp)
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = 24.dp)
+                .imePadding()
+                .navigationBarsPadding()
         ) {
             Spacer(modifier = Modifier.height(16.dp))
             TituloComponents(Modifier, "Crie sua conta", 30.sp)

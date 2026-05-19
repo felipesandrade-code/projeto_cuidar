@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -65,24 +66,25 @@ fun MessagesScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Central de Comunicação", fontFamily = FontFamily(Font(R.font.poppins_regular))) },
-                navigationIcon = {
+            Column(modifier = Modifier.fillMaxWidth().background(Color.White).statusBarsPadding()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Voltar")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar", tint = colorResource(R.color.cor_registre), modifier = Modifier.size(22.dp))
                     }
-                },
-                actions = {
+                    Text("Mensagens", fontFamily = FontFamily(Font(R.font.nunito_regular)), color = colorResource(R.color.cor_text_login), fontSize = 17.sp)
                     if (isOrfanato) {
                         IconButton(onClick = { showCreateCampaignDialog = true }) {
-                            Icon(Icons.Default.Campaign, contentDescription = "Nova Campanha")
+                            Icon(Icons.Default.Campaign, contentDescription = "Nova Campanha", tint = colorResource(R.color.cor_registre), modifier = Modifier.size(22.dp))
                         }
+                    } else {
+                        Spacer(modifier = Modifier.width(48.dp))
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = colorResource(R.color.cor_column_registre)
-                )
-            )
+                }
+            }
         }
     ) { padding ->
         Column(
@@ -92,7 +94,11 @@ fun MessagesScreen(
                 .padding(padding)
         ) {
             val tabs = if (isOrfanato) listOf("Mensagens Diretas", "Campanhas Push") else listOf("Minhas Mensagens")
-            TabRow(selectedTabIndex = selectedTab) {
+            TabRow(
+                selectedTabIndex = selectedTab,
+                containerColor = colorResource(R.color.cor_column_registre),
+                contentColor = colorResource(R.color.cor_registre)
+            ) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
                         selected = selectedTab == index,

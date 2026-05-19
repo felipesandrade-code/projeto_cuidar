@@ -61,7 +61,7 @@ fun AppNavHost(playServicesOk: Boolean) {
         composable("perfil") { PerfilScreen(nav, authVm, vm) }
         composable("doacao") { DoacaoScreen(nav, vm, managementVm, authVm) }
         composable("inscricao") { InscricaoScreen(nav, vm, managementVm, authVm) }
-        composable("mapa") { MapaScreen(nav, vm) }
+        composable("mapa") { MapaScreen(nav, vm, authVm) }
         composable("map_select") { MapaSelectScreen(nav, vm) }
         composable("registerOng") { CadastroOngScreen(nav, vm, authVm) }
         composable("ong_detail") { OrfanatoDetalheScreen(nav, vm) }

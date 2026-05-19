@@ -58,6 +58,7 @@ fun CadastroVoluntarioComponents(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(R.color.cor_column_registre))
+            .statusBarsPadding()
     ) {
         SuperiorRegister(Modifier, "Cadastro", navController)
 
@@ -66,6 +67,8 @@ fun CadastroVoluntarioComponents(
                 .fillMaxWidth()
                 .padding(top = 56.dp, bottom = 24.dp)
                 .verticalScroll(rememberScrollState())
+                .imePadding()
+                .navigationBarsPadding()
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 

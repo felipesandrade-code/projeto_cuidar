@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +30,8 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import br.com.fiap.projetocuidar.R
 import br.com.fiap.projetocuidar.components.SuperiorMapa
+import br.com.fiap.projetocuidar.components.navigation.AppBottomBar
+import br.com.fiap.projetocuidar.data.AuthViewModel
 import br.com.fiap.projetocuidar.data.OrphanageViewModel
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -59,7 +62,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun MapaScreen(navcontroller: NavController, vm: OrphanageViewModel) {
+fun MapaScreen(
+    navcontroller: NavController,
+    vm: OrphanageViewModel,
+    authViewModel: AuthViewModel
+) {
     val context = LocalContext.current
     val fusedClient = remember { LocationServices.getFusedLocationProviderClient(context) }
 
@@ -207,54 +214,72 @@ fun MapaScreen(navcontroller: NavController, vm: OrphanageViewModel) {
 
     val localOrphanages by remember { derivedStateOf { vm.orphanages.toList() } }
 
-    Box(Modifier.fillMaxSize()) {
-        GoogleMap(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.Center)
-                .offset(y = 20.dp),
-            cameraPositionState = cameraPositionState,
-            properties = mapProperties,
-            uiSettings = mapUiSettings,
-            onMapLoaded = { mapLoaded = true }
-        ) {
-            placesOrphanages.forEach { (coord, title) ->
-                Marker(
-                    state = rememberMarkerState(position = coord),
-                    title = title,
-                    icon = placeIcon ?: BitmapDescriptorFactory.defaultMarker(),
-                    onClick = {
-                        vm.selectPlaceForDetail(title, coord.latitude, coord.longitude)
-                        navcontroller.navigate("ong_detail")
-                        true
-                    }
-                )
-            }
+    LaunchedEffect(userLatLng) {
+        userLatLng?.let { vm.loadProximos(it.latitude, it.longitude) }
+    }
 
-            localOrphanages.forEach { o ->
-                Marker(
-                    state = rememberMarkerState(position = LatLng(o.lat, o.lng)),
-                    title = o.nome,
-                    snippet = o.categoria,
-                    icon = placeIcon ?: BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE),
-                    onClick = {
-                        vm.selectOrphanageForDetail(o)
-                        navcontroller.navigate("ong_detail")
-                        true
-                    }
-                )
-            }
+    Scaffold(
+        bottomBar = {
+            AppBottomBar(
+                navController = navcontroller,
+                authViewModel = authViewModel,
+                currentRoute = "mapa"
+            )
         }
+    ) { innerPadding ->
+        Box(
+            Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            GoogleMap(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Center)
+                    .offset(y = 20.dp),
+                cameraPositionState = cameraPositionState,
+                properties = mapProperties,
+                uiSettings = mapUiSettings,
+                onMapLoaded = { mapLoaded = true }
+            ) {
+                placesOrphanages.forEach { (coord, title) ->
+                    Marker(
+                        state = rememberMarkerState(position = coord),
+                        title = title,
+                        icon = placeIcon ?: BitmapDescriptorFactory.defaultMarker(),
+                        onClick = {
+                            vm.selectPlaceForDetail(title, coord.latitude, coord.longitude)
+                            navcontroller.navigate("ong_detail")
+                            true
+                        }
+                    )
+                }
 
-        FoundOrphanagesPill(
-            count = placesOrphanages.size + localOrphanages.size,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .offset(y = (-16).dp),
-            onAddClick = { navcontroller.navigate("map_select") }
-        )
+                localOrphanages.forEach { o ->
+                    Marker(
+                        state = rememberMarkerState(position = LatLng(o.lat, o.lng)),
+                        title = o.nome,
+                        snippet = o.categoria,
+                        icon = placeIcon ?: BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE),
+                        onClick = {
+                            vm.selectOrphanageForDetail(o)
+                            navcontroller.navigate("ong_detail")
+                            true
+                        }
+                    )
+                }
+            }
 
-        SuperiorMapa(navcontroller)
+            FoundOrphanagesPill(
+                count = placesOrphanages.size + localOrphanages.size,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .offset(y = (-72).dp),
+                onAddClick = { navcontroller.navigate("map_select") }
+            )
+
+            SuperiorMapa(navcontroller)
+        }
     }
 
     LaunchedEffect(mapLoaded, userLatLng) {

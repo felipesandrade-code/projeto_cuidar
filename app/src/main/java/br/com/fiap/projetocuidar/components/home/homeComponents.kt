@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import br.com.fiap.projetocuidar.R
 import br.com.fiap.projetocuidar.components.LogoComponent
+import br.com.fiap.projetocuidar.components.navigation.AppBottomBar
 import br.com.fiap.projetocuidar.data.AuthViewModel
 import br.com.fiap.projetocuidar.data.OrphanageViewModel
 import br.com.fiap.projetocuidar.data.ManagementViewModel
@@ -66,49 +67,11 @@ fun HomeComponents(
 
     Scaffold(
         bottomBar = {
-            NavigationBar(containerColor = colorResource(R.color.white), tonalElevation = 4.dp) {
-                NavigationBarItem(
-                    selected = true,
-                    onClick = { navController.navigate("home") },
-                    icon = { Icon(Icons.Filled.Home, contentDescription = "Home", modifier = Modifier.size(24.dp)) },
-                    label = { Text("Home", fontSize = 11.sp, fontFamily = FontFamily(Font(R.font.nunito_regular))) },
-                    colors = NavigationBarItemDefaults.colors(selectedIconColor = verdePrimario, selectedTextColor = verdePrimario, indicatorColor = colorResource(R.color.cor_column_registre))
-                )
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { navController.navigate("perfil") },
-                    icon = { Icon(Icons.Filled.Person, contentDescription = "Perfil", modifier = Modifier.size(24.dp)) },
-                    label = { Text("Perfil", fontSize = 11.sp, fontFamily = FontFamily(Font(R.font.nunito_regular))) },
-                    colors = NavigationBarItemDefaults.colors(selectedIconColor = verdePrimario, unselectedIconColor = colorResource(R.color.cor_text_login), selectedTextColor = verdePrimario, unselectedTextColor = colorResource(R.color.cor_text_login), indicatorColor = colorResource(R.color.cor_column_registre))
-                )
-                
-                if (isVoluntario) {
-                    NavigationBarItem(
-                        selected = false,
-                        onClick = { navController.navigate("mapa") },
-                        icon = { Icon(Icons.Filled.Map, contentDescription = "Mapa", modifier = Modifier.size(24.dp)) },
-                        label = { Text("Mapa", fontSize = 11.sp, fontFamily = FontFamily(Font(R.font.nunito_regular))) },
-                        colors = NavigationBarItemDefaults.colors(selectedIconColor = verdePrimario, unselectedIconColor = colorResource(R.color.cor_text_login), selectedTextColor = verdePrimario, unselectedTextColor = colorResource(R.color.cor_text_login), indicatorColor = colorResource(R.color.cor_column_registre))
-                    )
-                } else if (!isOrfanato) {
-                    NavigationBarItem(
-                        selected = false,
-                        onClick = { navController.navigate("doacao") },
-                        icon = { Icon(Icons.Filled.Favorite, contentDescription = "Doação", modifier = Modifier.size(24.dp)) },
-                        label = { Text("Doação", fontSize = 11.sp, fontFamily = FontFamily(Font(R.font.nunito_regular))) },
-                        colors = NavigationBarItemDefaults.colors(selectedIconColor = verdePrimario, unselectedIconColor = colorResource(R.color.cor_text_login), selectedTextColor = verdePrimario, unselectedTextColor = colorResource(R.color.cor_text_login), indicatorColor = colorResource(R.color.cor_column_registre))
-                    )
-                }
-
-                val messageRoute = if (isOrfanato) "operator_messages" else "chat_inbox"
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { navController.navigate(messageRoute) },
-                    icon = { Icon(Icons.Filled.Mail, contentDescription = "Mensagens", modifier = Modifier.size(24.dp)) },
-                    label = { Text("Mensagens", fontSize = 11.sp, fontFamily = FontFamily(Font(R.font.nunito_regular))) },
-                    colors = NavigationBarItemDefaults.colors(selectedIconColor = verdePrimario, unselectedIconColor = colorResource(R.color.cor_text_login), selectedTextColor = verdePrimario, unselectedTextColor = colorResource(R.color.cor_text_login), indicatorColor = colorResource(R.color.cor_column_registre))
-                )
-            }
+            AppBottomBar(
+                navController = navController,
+                authViewModel = authViewModel,
+                currentRoute = "home"
+            )
         }
     ) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize().background(colorResource(R.color.cor_column_registre)).padding(innerPadding).verticalScroll(rememberScrollState())) {
@@ -307,16 +270,6 @@ fun HomeComponents(
                                 Text("Voluntários", fontSize = 16.sp, fontFamily = FontFamily(Font(R.font.nunito_bold)), color = verdePrimario)
                             }
                         }
-                    }
-
-                    Row(modifier = Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Card(modifier = Modifier.weight(1f).height(100.dp).clickable { navController.navigate("operator_audit_logs") }, colors = CardDefaults.cardColors(containerColor = Color.White), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
-                            Column(modifier = Modifier.padding(12.dp)) {
-                                Text("Segurança", fontSize = 12.sp, color = Color.Gray)
-                                Text("Audit Logs", fontSize = 16.sp, fontFamily = FontFamily(Font(R.font.nunito_bold)), color = verdePrimario)
-                            }
-                        }
-                        Box(modifier = Modifier.weight(1f).height(100.dp))
                     }
 
                     Spacer(Modifier.height(16.dp))

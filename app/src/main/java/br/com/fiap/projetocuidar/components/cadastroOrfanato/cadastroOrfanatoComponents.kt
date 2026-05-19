@@ -169,6 +169,7 @@ fun CadastroOngComponents(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(R.color.cor_column_registre))
+            .statusBarsPadding()
     ) {
         SuperiorCadastroOng(Modifier, stringResource(R.string.text_name), navController)
 
@@ -178,6 +179,7 @@ fun CadastroOngComponents(
                 .padding(top = 56.dp, bottom = 24.dp)
                 .verticalScroll(rememberScrollState())
                 .imePadding()
+                .navigationBarsPadding()
         ) {
             Spacer(Modifier.height(16.dp))
 

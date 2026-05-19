@@ -7,7 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material3.*
@@ -52,17 +52,19 @@ fun StatisticsScreen(
     
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Estatísticas da ONG", fontFamily = FontFamily(Font(R.font.poppins_regular))) },
-                navigationIcon = {
+            Column(modifier = Modifier.fillMaxWidth().background(Color.White).statusBarsPadding()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Voltar")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar", tint = verdePrimario, modifier = Modifier.size(22.dp))
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = colorResource(R.color.cor_column_registre)
-                )
-            )
+                    Text("Estatísticas da ONG", fontFamily = FontFamily(Font(R.font.nunito_regular)), color = colorResource(R.color.cor_text_login), fontSize = 17.sp)
+                    Spacer(modifier = Modifier.width(48.dp))
+                }
+            }
         }
     ) { padding ->
         Column(

@@ -6,8 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -54,22 +54,19 @@ fun ManageTasksScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Gerenciar Vagas", fontFamily = FontFamily(Font(R.font.poppins_regular))) },
-                navigationIcon = {
+            Column(modifier = Modifier.fillMaxWidth().background(Color.White).statusBarsPadding()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Voltar")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar", tint = colorResource(R.color.cor_registre), modifier = Modifier.size(22.dp))
                     }
-                },
-                actions = {
-                    IconButton(onClick = { showCreateDialog = true }) {
-                        Icon(Icons.Default.Add, contentDescription = "Nova Vaga")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = colorResource(R.color.cor_column_registre)
-                )
-            )
+                    Text("Gerenciar Vagas", fontFamily = FontFamily(Font(R.font.nunito_regular)), color = colorResource(R.color.cor_text_login), fontSize = 17.sp)
+                    Spacer(modifier = Modifier.width(48.dp))
+                }
+            }
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -93,8 +90,12 @@ fun ManageTasksScreen(
                         Icon(Icons.Default.Assignment, contentDescription = null, modifier = Modifier.size(64.dp), tint = Color.Gray)
                         Spacer(Modifier.height(16.dp))
                         Text("Nenhuma vaga cadastrada.", color = Color.Gray)
-                        Button(onClick = { showCreateDialog = true }, modifier = Modifier.padding(top = 16.dp)) {
-                            Text("Criar Primeira Vaga")
+                        Button(
+                            onClick = { showCreateDialog = true },
+                            modifier = Modifier.padding(top = 16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = verdePrimario)
+                        ) {
+                            Text("Criar Primeira Vaga", color = Color.White)
                         }
                     }
                 }

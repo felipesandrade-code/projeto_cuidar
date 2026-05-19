@@ -50,7 +50,7 @@ fun SuperiorCadastroOng(
             )
         }
         Text(
-            text = "Adicione",
+            text = text,
             fontFamily = FontFamily(Font(R.font.nunito_regular)),
             color = colorResource(R.color.cor_text_login),
             fontSize = 17.sp
@@ -90,7 +90,7 @@ fun SuperiorOngComponent(
             )
         }
         Text(
-            text = "Orfanato",
+            text = text,
             fontFamily = FontFamily(Font(R.font.nunito_regular)),
             color = colorResource(R.color.cor_text_login),
             fontSize = 17.sp
@@ -123,7 +123,7 @@ fun SuperiorRegister(
             )
         }
         Text(
-            text = "Cadastro",
+            text = text,
             fontFamily = FontFamily(Font(R.font.nunito_regular)),
             color = colorResource(R.color.cor_text_login),
             fontSize = 17.sp
@@ -150,7 +150,7 @@ fun SuperiorMapa(navcontroller: NavController) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = { navcontroller.navigateUp() }) {
+        IconButton(onClick = { navcontroller.navigate("home") { launchSingleTop = true } }) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Voltar",
@@ -159,7 +159,7 @@ fun SuperiorMapa(navcontroller: NavController) {
             )
         }
         Text(
-            text = "Mapa",
+            text = "ONGs próximas",
             fontFamily = FontFamily(Font(R.font.nunito_regular)),
             color = colorResource(R.color.cor_text_login),
             fontSize = 17.sp
@@ -176,7 +176,7 @@ fun SuperiorComLogo(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(72.dp)
+            .height(56.dp)
             .background(color = colorResource(R.color.white))
             .padding(horizontal = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -190,7 +190,7 @@ fun SuperiorComLogo(
                 modifier = Modifier.size(22.dp)
             )
         }
-        LogoComponent("Cuidar+", 60.dp, 0.dp, 0.dp)
+        LogoComponent("Cuidar+", 48.dp, 0.dp, 0.dp)
         if (closeRoute != null) {
             IconButton(onClick = { navcontroller.navigate(closeRoute) }) {
                 Icon(

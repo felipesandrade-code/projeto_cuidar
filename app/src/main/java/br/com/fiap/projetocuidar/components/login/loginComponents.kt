@@ -7,10 +7,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -97,25 +98,26 @@ fun LoginComponents(
         unfocusedBorderColor = Color.LightGray
     )
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .imePadding()
+    ) {
         Image(
             painter = painterResource(R.drawable.kids),
             contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.52f)
-                .align(Alignment.TopCenter),
+            modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.64f)
                 .align(Alignment.BottomCenter)
                 .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
                 .background(colorResource(R.color.cor_column_registre))
                 .verticalScroll(rememberScrollState())
+                .navigationBarsPadding()
                 .padding(vertical = 20.dp)
         ) {
             Row(

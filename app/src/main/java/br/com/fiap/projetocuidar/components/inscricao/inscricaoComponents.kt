@@ -75,7 +75,10 @@ fun InscricaoComponents(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(R.color.cor_column_registre))
+            .statusBarsPadding()
             .verticalScroll(rememberScrollState())
+            .imePadding()
+            .navigationBarsPadding()
     ) {
         SuperiorComLogo(navcontroller = navController)
 
